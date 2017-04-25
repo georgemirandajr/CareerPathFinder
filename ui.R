@@ -107,14 +107,7 @@ shinyUI(navbarPage(title = "",
                                                               ".shiny-output-error { visibility: hidden; }",
                                                               ".shiny-output-error:before { visibility: hidden; }"
                                                    ),
-                                                   # visNetwork::visNetworkOutput("visTest", height = "300px"),
-                                                   tableOutput("printNodeTbl"),
-                                                   tableOutput("printEdgeTbl"),
-                                                   verbatimTextOutput("printInput1"),
-                                                   verbatimTextOutput("printTbl1"),
-                                                   verbatimTextOutput("printTbl2"),
-                                                   verbatimTextOutput("printTbl3"),
-                                                   verbatimTextOutput("printTbl4")
+                                                   visNetwork::visNetworkOutput("visTest", height = "300px")
                                                )
                                            ),
                                            fluidRow(
@@ -122,7 +115,6 @@ shinyUI(navbarPage(title = "",
                                                    div(class="panel-body", 
                                                        tags$div(
                                                            align = "center",
-                                                           actionButton('clear2', 'Clear Job 2'),
                                                            actionButton("goBack", label = "", icon = icon("arrow-circle-left", class = "fa-2x")),
                                                            actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
                                                            actionButton("btn1", label = "", icon = icon("arrow-circle-right", class = "fa-2x")),
