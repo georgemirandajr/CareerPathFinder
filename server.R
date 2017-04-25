@@ -1,0 +1,309 @@
+
+# This is the server logic for a Shiny web application.
+# You can find out more about building applications with Shiny here:
+#
+# http://shiny.rstudio.com
+#
+
+# Helper functions
+get_title <- function(x) item_ref[which(item_ref$TitleCode == x), 2] 
+
+# Initialize empty data.frames for visualization nodes and edges
+# nodes <- data.frame(id = integer(), label = character(), title = character(),
+#                     shape = character(), icon.face = character(), icon.code = character(),
+#                     stringsAsFactors = FALSE)
+
+# Load all datasets
+load("./data/item_pairs_30.rda")  # Load data  - old files end in rds, e.g., "item_pairs.rds"
+load("./data/item_pairs_15.rda")
+load("./data/item_ref.rds")  
+
+
+shinyServer(function(input, output) {
+    
+    # Select dataset -----------------------------------------------------------
+    item_pairs <- reactive({
+        switch(input$selectData,
+               "30 Years" = item_pairs_30,
+               "15 Years" = item_pairs_15)
+    })
+    
+    # Initialize a variable to count how many times "btn1" is clicked.
+    values <- reactiveValues(data = 1) 
+    
+    # React to "btn1" being pressed by adding 1 to the values$data variable
+    observeEvent( input$btn1, {
+        if ( input$item_name == "" ) {
+            showModal(modalDialog(title = "Pick a starting job first.",
+                                  "It looks like you forgot to select a starting job. Please select a job from the drop-down
+                                  menu to begin your career path.",
+                                   easyClose = FALSE, size = "s" ))
+        } else { 
+            values$data = values$data + 1 }
+        
+    })
+    
+    observeEvent( input$goBack, {
+        values$data = values$data - 1
+        
+        if (values$data <= 5) {
+            enable("btn1")
+        }
+        
+    })
+    
+    # Disable btn1 when step 5 is reached
+    useShinyjs()
+    observeEvent( input$btn1, {
+        if( values$data > 5 )
+            shinyjs::disable("btn1")
+    })
+    
+    # Show/Hide Settings -----------------------------------------------------------------
+    # Hide settings at start of new Shiny session
+    observe(hide("selectData"),
+            hide("changeAvatar"))
+    
+    # Toggle visibility of settings
+    observeEvent(input$settings, {
+        shinyjs::toggle("selectData", anim = TRUE)  # toggle is a shinyjs function
+        shinyjs::toggle("changeAvatar", anim = TRUE)
+    })
+    
+    # Determine which 'select' options to display (Input choices)
+    output$btns <- renderUI({
+        if (values$data == 0) {
+            return()
+        } else if (values$data == 1) {
+            uiOutput("select1")
+        } else if (values$data == 2) {
+            dataTableOutput("select2")
+        } else if (values$data == 3) {
+            dataTableOutput("select3")
+        } else if (values$data == 4) {
+            dataTableOutput("select4")
+        } else if (values$data >= 5) {
+            dataTableOutput("select5")
+        } 
+    })
+    
+    # Reset Button -------------------------------------------------------------
+    useShinyjs()
+    observeEvent( input$resetBtn, {
+        values$data = 1
+        shinyjs::enable("btn1")
+        selections <- vector(mode = "character", length = 0)
+    })
+    
+    # Select Input (First Job) -------------------------------------------------
+    output$select1 <- renderUI({
+        selectizeInput("item_name", label = "Step 1:",
+                       choices = item_ref$TitleLong,
+                       width = "100%",
+                       options = list(
+                           placeholder = 'Select the start of your path:',
+                           onInitialize = I('function() { this.setValue(""); }'))
+        )
+    })
+    
+    # Table Inputs (Next 2-5 Selections) ---------------------------------------
+    
+    # Table 1 (Step 2)
+    # eventReactive( input$item_name,
+    top1 <- reactive({
+        
+        top <- dplyr::filter(item_pairs(), Item1Name == input$item_name) %>%
+            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+    })
+    
+    output$select2 <- DT::renderDataTable({
+        datatable( top1(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", caption = "Step 2:"
+        )
+    })
+    
+    outputOptions(output, "select2", suspendWhenHidden = FALSE)
+
+    # Table 2 (Step 3)
+    # eventReactive( input$select2_cell_clicked, 
+    top2 <- reactive({
+
+        itemName <- top1()[ input$select2_rows_selected,  "Item2Name"]
+        
+        top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
+            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+        top
+    })
+    
+    output$select3 <- DT::renderDataTable({
+        datatable( top2(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", caption = "Step 3:"
+        )
+    })
+    
+    outputOptions(output, "select3", suspendWhenHidden = FALSE)
+    
+    # Table 3 (Step 4)
+    top3 <- reactive({
+        
+        itemName <- top2()[ input$select3_rows_selected,  "Item2Name"]
+        
+        top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
+            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+        top
+    })
+    
+    output$select4 <- DT::renderDataTable({
+        datatable( top3(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", caption = "Step 4:"
+        )
+    })
+    
+    outputOptions(output, "select4", suspendWhenHidden = FALSE)
+    
+    # Table 4 (Step 5)
+    top4 <- reactive({
+        
+        itemName <- top3()[ input$select4_rows_selected,  "Item2Name"]
+        
+        top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
+            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+        top
+    })
+    
+    output$select5 <- DT::renderDataTable({
+        datatable( top4(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", caption = "Step 5:"
+        )
+    })
+    
+    outputOptions(output, "select5", suspendWhenHidden = FALSE)
+    
+    # Test the outputs by printing to screen -----------------------------------
+    output$printSel <- renderPrint({
+        paste("Value of Btn1 is:", values$data)
+    })
+    
+    output$printInput1 <- renderPrint({
+        paste("First selection is:", input$item_name)
+    })
+    
+    output$printTbl1 <- renderPrint({
+        paste("Row selected from Table 1 is:", input$select2_rows_selected,
+              "and the selection is:", top1()[ input$select2_rows_selected,  "Item2Name"])
+    })
+    
+    output$printTbl2 <- renderPrint({
+        paste("Row selected from Table 2 is:", input$select3_rows_selected,
+              "and the selection is:", top2()[ input$select3_rows_selected,  "Item2Name"])
+    })
+    
+    output$printTbl3 <- renderPrint({
+        paste("Row selected from Table 3 is:", input$select4_rows_selected,
+              "and the selection is:", top3()[ input$select4_rows_selected,  "Item2Name"])
+    })
+    
+    
+    output$printTbl4 <- renderPrint({
+        paste("Row selected from Table 4 is:", input$select5_rows_selected,
+              "and the selection is:", top4()[ input$select5_rows_selected,  "Item2Name"])
+    })
+    
+    output$printNodeTbl <- renderTable(visNode())
+    output$printEdgeTbl <- renderTable(visEdge())
+    
+    
+    # Visualization ------------------------------------------------------------
+
+    # Avatar to use in the visualization
+    avatar <- reactive({
+        switch(input$changeAvatar,
+               "circle" = "f2be",
+               "map-marker" = "f041",
+               "map-pin" = "f276",
+               "street-view" = "f21d",
+               "user" = "f007")
+    })
+    
+    # Test Variable #
+    output$mySelections <- renderPrint(selections)
+    
+    selectedJobs <- reactive({
+        
+    })
+    
+    visNode <- reactive({
+
+        # # Collect user selections
+        # if( length(selections) == 0 ){
+        #     # Add id and icons
+        #     nodes[1,]$id <- 1
+        #     nodes$shape <- rep("icon", 1)
+        #     nodes$icon.face <- rep('fontAwesome', 1)
+        #     nodes$icon.code <- rep(avatar(), 1)
+        # }
+        
+        item_name1 <- input$item_name
+        item_name2 <- top1()[ input$select2_rows_selected,  "Item2Name"] 
+        item_name3 <- top2()[ input$select3_rows_selected,  "Item2Name"] 
+        item_name4 <- top3()[ input$select4_rows_selected,  "Item2Name"] 
+        item_name5 <- top4()[ input$select5_rows_selected,  "Item2Name"] 
+        
+        # Collect user selections
+        selections <- append(selections,
+                             c(item_name1, item_name2, item_name3,
+                               item_name4, item_name5))
+        
+        # Add selections to data.frame
+        nodes[1:length(selections),2] <- selections
+        
+        # Add id
+        nodes$id <- 1:length(selections)
+        
+        # Add icons, which requires defining 3 properties
+        nodes$shape <- rep("icon", length(selections))
+        nodes$icon.face <- rep('fontAwesome', length(selections))
+        nodes$icon.code <- rep(avatar(), length(selections))
+        
+        # Add shadow
+        nodes$shadow <- TRUE
+        
+        nodes <- nodes[which(nodes$label != " "),]
+        nodes
+        
+    })
+    
+    visEdge <- reactive({
+        
+        num_selections <- nrow( visNode() )
+        
+        if ( num_selections > 0)
+            for ( i in 1:(num_selections-1) ) {
+                edges[i, ] <- c( i, i+1, 200)
+            }
+        edges
+    })
+    
+    # Creating the dynamic graph
+    output$visTest <- visNetwork::renderVisNetwork({
+
+        visNetwork::visNetwork(visNode(), visEdge(), height = "100px", width = "100%") %>%
+            addFontAwesome() %>%
+            visNetwork::visEdges(dashes = TRUE, shadow = TRUE, 
+                                 arrows = list(to = list(enabled = TRUE, scaleFactor = 2)),
+                                 color = list(color = "#587fb4", highlight = "red")) %>%
+            visNodes(shadow = list(enabled = TRUE, size = 15)) %>%
+            visHierarchicalLayout(direction = "LR", levelSeparation = 220,
+                                  parentCentralization = FALSE)
+        # visLayout(randomSeed = 129)
+    })
+    
+})
