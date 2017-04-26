@@ -6,12 +6,18 @@
 #
 
 # Helper functions
-get_title <- function(x) item_ref[which(item_ref$TitleCode == x), 2] 
+# get_title <- function(x) item_ref[which(item_ref$TitleCode == x), 2] 
 
-# Initialize empty data.frames for visualization nodes and edges
-# nodes <- data.frame(id = integer(), label = character(), title = character(),
-#                     shape = character(), icon.face = character(), icon.code = character(),
-#                     stringsAsFactors = FALSE)
+# Initialize the user selections and tooltip (title)
+selections <- vector(mode = "character", length = 0)
+
+# Initialize empty data.frames for nodes and edges
+nodes <- data.frame(id = integer(), label = character(), title = character(), 
+                    shape = character(), icon.face = character(), icon.code = character(), 
+                    stringsAsFactors = FALSE)
+
+# Initialize edges data
+edges <- data.frame(from = numeric(), to = numeric(), length = numeric())
 
 # Load all datasets
 load("./data/item_pairs_30.rda")  # Load data  - old files end in rds, e.g., "item_pairs.rds"
@@ -58,6 +64,16 @@ shinyServer(function(input, output) {
         if( values$data > 5 )
             shinyjs::disable("btn1")
     })
+    
+    # Disable goBack button at start of session
+    # observe(disable("goBack"))
+    observe( 
+        if(values$data == 1){
+            disable("goBack")
+        } else {
+            enable("goBack")    
+        }
+    )
     
     # Show/Hide Settings -----------------------------------------------------------------
     # Hide settings at start of new Shiny session
@@ -233,29 +249,13 @@ shinyServer(function(input, output) {
                "user" = "f007")
     })
     
-    # Test Variable #
-    output$mySelections <- renderPrint(selections)
-    
-    selectedJobs <- reactive({
-        
-    })
-    
     visNode <- reactive({
-
-        # # Collect user selections
-        # if( length(selections) == 0 ){
-        #     # Add id and icons
-        #     nodes[1,]$id <- 1
-        #     nodes$shape <- rep("icon", 1)
-        #     nodes$icon.face <- rep('fontAwesome', 1)
-        #     nodes$icon.code <- rep(avatar(), 1)
-        # }
         
-        item_name1 <- input$item_name
-        item_name2 <- top1()[ input$select2_rows_selected,  "Item2Name"] 
-        item_name3 <- top2()[ input$select3_rows_selected,  "Item2Name"] 
-        item_name4 <- top3()[ input$select4_rows_selected,  "Item2Name"] 
-        item_name5 <- top4()[ input$select5_rows_selected,  "Item2Name"] 
+        item_name1 <- input$item_name  
+        item_name2 <- try( top1()[ input$select2_rows_selected,  "Item2Name"], TRUE ) 
+        item_name3 <- try( top2()[ input$select3_rows_selected,  "Item2Name"], TRUE ) 
+        item_name4 <- try( top3()[ input$select4_rows_selected,  "Item2Name"], TRUE ) 
+        item_name5 <- try( top4()[ input$select5_rows_selected,  "Item2Name"], TRUE ) 
         
         # Collect user selections
         selections <- append(selections,
@@ -276,7 +276,12 @@ shinyServer(function(input, output) {
         # Add shadow
         nodes$shadow <- TRUE
         
-        nodes <- nodes[which(nodes$label != " "),]
+        # Keep only the rows that don't have errors
+        nodes <- nodes[grep("Error", nodes$label, invert = TRUE),]
+        
+        # if(nodes[which(is.na(nodes$id)),])
+        nodes <- nodes[ !is.na(nodes$label), ]  # Keep rows that are not NA in Label column
+        
         nodes
         
     })

@@ -116,7 +116,7 @@ shinyUI(navbarPage(title = "",
                                                        tags$div(
                                                            align = "center",
                                                            actionButton("goBack", label = "", icon = icon("arrow-circle-left", class = "fa-2x")),
-                                                           actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
+                                                           # actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
                                                            actionButton("btn1", label = "", icon = icon("arrow-circle-right", class = "fa-2x")),
                                                            checkboxInput('returnpdf', 'Save as PDF?', FALSE),
                                                            conditionalPanel(
