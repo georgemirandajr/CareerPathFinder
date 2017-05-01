@@ -19,7 +19,9 @@ edges <- data.frame(from = numeric(), to = numeric(), length = numeric())
 # Load all datasets
 load("./data/item_pairs_30.rda")  # Load data  - old files end in rds, e.g., "item_pairs.rds"
 load("./data/item_pairs_15.rda")
-load("./data/item_ref.rds")  
+# load("./data/item_ref.rds")  
+load("./data/item_ref_30.rda")
+item_ref <- item_ref_30; rm(item_ref_30)
 
 source("./www/getLink.R")
 
@@ -45,6 +47,7 @@ shinyServer(function(input, output, session) {
     # Initialize a variable to count how many times "btn1" is clicked.
     values <- reactiveValues(data = 1) 
     
+    # Btn1 ---------------------------------------------------------------------
     # React to "btn1" being pressed by adding 1 to the values$data variable
     observeEvent( input$btn1, {
         if ( input$item_name == "" ) {
@@ -126,6 +129,21 @@ shinyServer(function(input, output, session) {
         selections <- vector(mode = "character", length = 0)
     })
     
+    # Search NeoGov ------------------------------------------------------------
+    link <- eventReactive(input$searchTerm, {
+        
+        addr <- getLink(input$searchTerm)  # create a hyperlink based on the text input
+        
+        paste0( "window.open('", addr, "', '_blank')" )  # this code opens the link in a separate window
+    })
+    
+    output$searchNeo <- renderUI({
+        actionButton("srchNeo", 
+                     label = "Search", 
+                     onclick = link(),
+                     icon = icon("external-link"))  # when clicked, the link() code executes
+    })
+    
     # Select Input (First Job) -------------------------------------------------
     output$select1 <- renderUI({
         selectizeInput("item_name", label = "Step 1:",
@@ -148,11 +166,15 @@ shinyServer(function(input, output, session) {
     })
     
     output$select2 <- DT::renderDataTable({
-        datatable( top1(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+        datatable( top1(), escape = FALSE, 
+                   options = list(
+                       lengthMenu = c(10, 20)),
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 2:"
-        )
+        ) %>%
+            formatCurrency('SalaryDiff') %>% 
+            formatPercentage('Prob', 1)
     })
     
     outputOptions(output, "select2", suspendWhenHidden = FALSE)
@@ -180,7 +202,9 @@ shinyServer(function(input, output, session) {
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 3:"
-        )
+        ) %>%
+            formatCurrency('SalaryDiff') %>% 
+            formatPercentage('Prob', 1)
     })
     
     outputOptions(output, "select3", suspendWhenHidden = FALSE)
@@ -207,7 +231,9 @@ shinyServer(function(input, output, session) {
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 4:"
-        )
+        ) %>%
+            formatCurrency('SalaryDiff') %>% 
+            formatPercentage('Prob', 1)
     })
     
     outputOptions(output, "select4", suspendWhenHidden = FALSE)
@@ -234,7 +260,9 @@ shinyServer(function(input, output, session) {
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 5:"
-        )
+        ) %>%
+            formatCurrency('SalaryDiff') %>% 
+            formatPercentage('Prob', 1)
     })
     
     outputOptions(output, "select5", suspendWhenHidden = FALSE)
@@ -294,10 +322,10 @@ shinyServer(function(input, output, session) {
     
     colorIcon <- reactive({
         switch(input$changeColor,
-               "blue" = "lightblue", # #97C2FC
-               "green" = "darkblue", # #10d13a
-               "red" = "yellow",     # #f44141
-               "black" = "grey")     # #000000
+               "blue" = "#97C2FC",
+               "green" = "#10d13a", 
+               "red" = "#f44141",     
+               "black" = "#000000")     
     })
     
     visNode <- reactive({

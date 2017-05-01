@@ -149,7 +149,7 @@ shinyUI(navbarPage(title = "",
                                                            div(style="display: inline-block;vertical-align:top; width: 150px;",
                                                                introBox(
                                                                    actionButton("goBack", 
-                                                                                label = "Step Back", 
+                                                                                label = "Back", 
                                                                                 icon = icon("arrow-circle-left", class = "fa-2x")),
                                                                    data.step = 3,
                                                                    data.intro = "Clear your current selection and go back a step."
