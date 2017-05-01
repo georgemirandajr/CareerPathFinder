@@ -5,16 +5,13 @@
 # http://shiny.rstudio.com
 #
 
-# Helper functions
-# get_title <- function(x) item_ref[which(item_ref$TitleCode == x), 2] 
-
 # Initialize the user selections and tooltip (title)
 selections <- vector(mode = "character", length = 0)
 
 # Initialize empty data.frames for nodes and edges
 nodes <- data.frame(id = integer(), label = character(), title = character(), 
                     shape = character(), icon.face = character(), icon.code = character(), 
-                    stringsAsFactors = FALSE)
+                    color = character(), stringsAsFactors = FALSE)
 
 # Initialize edges data
 edges <- data.frame(from = numeric(), to = numeric(), length = numeric())
@@ -24,8 +21,19 @@ load("./data/item_pairs_30.rda")  # Load data  - old files end in rds, e.g., "it
 load("./data/item_pairs_15.rda")
 load("./data/item_ref.rds")  
 
+source("./www/getLink.R")
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+    
+    # DT Options
+    options(DT.options = list( lengthMenu = c(10, 20) ))
+    
+    # Intro JS ----------------------------------------------------------------
+    observeEvent(input$help,
+                 introjs(session, options = list("nextLabel"="Next",
+                                                 "prevLabel"="Back",
+                                                 "skipLabel"="Exit"))
+    )
     
     # Select dataset -----------------------------------------------------------
     item_pairs <- reactive({
@@ -43,30 +51,32 @@ shinyServer(function(input, output) {
             showModal(modalDialog(title = "Pick a starting job first.",
                                   "It looks like you forgot to select a starting job. Please select a job from the drop-down
                                   menu to begin your career path.",
-                                   easyClose = FALSE, size = "s" ))
+                                  easyClose = FALSE, size = "s" ))
         } else { 
             values$data = values$data + 1 }
         
     })
     
+    # Go Back Button -----------------------------------------------------------
+
     observeEvent( input$goBack, {
-        values$data = values$data - 1
         
         if (values$data <= 5) {
             enable("btn1")
         }
+
+        values$data = values$data - 1
         
     })
     
     # Disable btn1 when step 5 is reached
     useShinyjs()
     observeEvent( input$btn1, {
-        if( values$data > 5 )
+        if( values$data == 5 )
             shinyjs::disable("btn1")
     })
     
     # Disable goBack button at start of session
-    # observe(disable("goBack"))
     observe( 
         if(values$data == 1){
             disable("goBack")
@@ -77,13 +87,18 @@ shinyServer(function(input, output) {
     
     # Show/Hide Settings -----------------------------------------------------------------
     # Hide settings at start of new Shiny session
-    observe(hide("selectData"),
-            hide("changeAvatar"))
+    observe(c(hide("selectData"),
+            hide("changeAvatar"),
+            hide("changeColor"),
+            hide("userName")
+            ))
     
     # Toggle visibility of settings
     observeEvent(input$settings, {
         shinyjs::toggle("selectData", anim = TRUE)  # toggle is a shinyjs function
         shinyjs::toggle("changeAvatar", anim = TRUE)
+        shinyjs::toggle("changeColor", anim = TRUE)
+        shinyjs::toggle("userName", anim = TRUE)
     })
     
     # Determine which 'select' options to display (Input choices)
@@ -134,18 +149,25 @@ shinyServer(function(input, output) {
     
     output$select2 <- DT::renderDataTable({
         datatable( top1(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
-                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 2:"
         )
     })
     
     outputOptions(output, "select2", suspendWhenHidden = FALSE)
-
+    
+    proxy1 = dataTableProxy('select2')
+    
+    # observeEvent(input$goBack, {
+    #     proxy1 <- proxy1 %>% selectRows(NULL)
+    #     # values$data <- values$data - 1
+    # })
+    
     # Table 2 (Step 3)
     # eventReactive( input$select2_cell_clicked, 
     top2 <- reactive({
-
+        
         itemName <- top1()[ input$select2_rows_selected,  "Item2Name"]
         
         top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
@@ -155,13 +177,20 @@ shinyServer(function(input, output) {
     
     output$select3 <- DT::renderDataTable({
         datatable( top2(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
-                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 3:"
         )
     })
     
     outputOptions(output, "select3", suspendWhenHidden = FALSE)
+    
+    proxy2 = dataTableProxy('select3')
+    
+    # observeEvent(input$goBack, {
+    #     proxy2 %>% selectRows(NULL)
+    #     # values$data <- values$data - 1
+    # })
     
     # Table 3 (Step 4)
     top3 <- reactive({
@@ -175,13 +204,20 @@ shinyServer(function(input, output) {
     
     output$select4 <- DT::renderDataTable({
         datatable( top3(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
-                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 4:"
         )
     })
     
     outputOptions(output, "select4", suspendWhenHidden = FALSE)
+    
+    proxy3 = dataTableProxy('select4')
+    
+    # observeEvent(input$goBack, {
+    #     proxy3 %>% selectRows(NULL)
+    #     # values$data <- values$data - 1
+    # })
     
     # Table 4 (Step 5)
     top4 <- reactive({
@@ -195,7 +231,7 @@ shinyServer(function(input, output) {
     
     output$select5 <- DT::renderDataTable({
         datatable( top4(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
-                   selection = list(mode = 'single', selected = 1, target = 'row'),
+                   selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", caption = "Step 5:"
         )
@@ -203,12 +239,19 @@ shinyServer(function(input, output) {
     
     outputOptions(output, "select5", suspendWhenHidden = FALSE)
     
+    proxy4 = dataTableProxy('select5')
+    
+    # observeEvent(input$goBack, {
+    #     proxy4 <- proxy4 %>% selectRows(NULL)
+    #     # values$data <- values$data - 1
+    # })
+    
     # Test the outputs by printing to screen -----------------------------------
     output$printSel <- renderPrint({
         paste("Value of Btn1 is:", values$data)
     })
     
-    output$printInput1 <- renderPrint({
+    output$printInput1 <- renderText({
         paste("First selection is:", input$item_name)
     })
     
@@ -238,15 +281,23 @@ shinyServer(function(input, output) {
     
     
     # Visualization ------------------------------------------------------------
-
+    
     # Avatar to use in the visualization
     avatar <- reactive({
         switch(input$changeAvatar,
                "circle" = "f2be",
                "map-marker" = "f041",
-               "map-pin" = "f276",
+               "rocket" = "f135",
                "street-view" = "f21d",
-               "user" = "f007")
+               "leaf" = "f06c")
+    })
+    
+    colorIcon <- reactive({
+        switch(input$changeColor,
+               "blue" = "lightblue", # #97C2FC
+               "green" = "darkblue", # #10d13a
+               "red" = "yellow",     # #f44141
+               "black" = "grey")     # #000000
     })
     
     visNode <- reactive({
@@ -272,6 +323,7 @@ shinyServer(function(input, output) {
         nodes$shape <- rep("icon", length(selections))
         nodes$icon.face <- rep('fontAwesome', length(selections))
         nodes$icon.code <- rep(avatar(), length(selections))
+        nodes$color <- rep(colorIcon(), length(selections))
         
         # Add shadow
         nodes$shadow <- TRUE
@@ -279,10 +331,8 @@ shinyServer(function(input, output) {
         # Keep only the rows that don't have errors
         nodes <- nodes[grep("Error", nodes$label, invert = TRUE),]
         
-        # if(nodes[which(is.na(nodes$id)),])
-        nodes <- nodes[ !is.na(nodes$label), ]  # Keep rows that are not NA in Label column
-        
-        nodes
+        # Keep rows that are not NA in Label column
+        nodes <- nodes[ !is.na(nodes$label), ]  
         
     })
     
@@ -299,7 +349,7 @@ shinyServer(function(input, output) {
     
     # Creating the dynamic graph
     output$visTest <- visNetwork::renderVisNetwork({
-
+        
         visNetwork::visNetwork(visNode(), visEdge(), height = "100px", width = "100%") %>%
             addFontAwesome() %>%
             visNetwork::visEdges(dashes = TRUE, shadow = TRUE, 

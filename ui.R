@@ -6,9 +6,12 @@
 #
 packages <- c("dplyr", "tidyr", "lubridate", "knitr", "stringr", 
               "igraph", "networkD3", "shiny", "png", "shinyjs", 
-              "visNetwork", "DT", "shinyLP")
+              "visNetwork", "DT", "rintrojs")
 
 sapply(packages, require, character.only = TRUE)
+
+library(rintrojs)
+library(shinyLP)
 
 source("carouselPanel.R")
 
@@ -21,7 +24,6 @@ shinyUI(navbarPage(title = "",
                    header = tags$style(
                        ".navbar-right {
                            float: right !important;
-                           margin-right: -15px;
                        }",
                        "body {padding-top: 100px;}"),
                    
@@ -66,7 +68,13 @@ shinyUI(navbarPage(title = "",
                             fluidRow(
                                 column(3),
                                 column(6, 
-                                       list_item("How to use this app")
+                                       wellPanel("If you are unsure about how to start your career path, you can browse through job descriptions at", tags$a("governmentjobs.com", href = "https://www.governmentjobs.com/careers/lacounty/classspecs" )),
+                                       textInput("searchTerm", label = "Search Jobs:",
+                                                 value = "...",
+                                                 width = "100%"
+                                                 
+                                       ),
+                                       uiOutput("searchNeo")
                                 ),
                                 column(3)
                             ),
@@ -77,8 +85,12 @@ shinyUI(navbarPage(title = "",
                    ), # Closes the first tabPanel called "Home"
                    
                    tabPanel("Career PathFinder",
+                            
                             sidebarLayout(
+                                
                                 sidebarPanel( width = 3,
+                                              introjsUI(),
+                                              
                                               useShinyjs(),
                                               
                                               radioButtons("selectData", 
@@ -89,16 +101,31 @@ shinyUI(navbarPage(title = "",
                                                            width = "100%"
                                               ),
                                               selectizeInput("changeAvatar", "Change Avatar:",
-                                                             choices = c("Dot" = "circle", 
+                                                             choices = c("Circle" = "circle", 
                                                                          "Map Marker" = "map-marker", 
-                                                                         "Pin" = "map-pin", 
+                                                                         "Rocket" = "rocket", 
                                                                          "Street View" = "street-view", 
-                                                                         "User" = "user")
+                                                                         "Leaf" = "leaf")
                                               ),
+                                              selectizeInput("changeColor", "Icon Color:",
+                                                             choices = c("Blue" = "blue", 
+                                                                         "Green" = "green", 
+                                                                         "Red" = "red",
+                                                                         "Black" = "black")
+                                                             ),
+                                              textInput("userName", "Add your name:", value = ""),
+                                              
                                               uiOutput("tstAvatar")
                                               ,
-                                              
-                                              actionLink("settings", "Settings", icon = icon("sliders", class = "fa-2x"))
+                                              introBox(
+                                                  actionLink("settings", "Settings", 
+                                                             icon = icon("sliders", class = "fa-2x")),
+                                                  br(),
+                                                  actionButton("help", "Take a Quick Tour"),
+                                                  uiOutput("printInput1"),
+                                                  data.step = 5,
+                                                  data.intro = "Settings is where you can set options that affect the graph and career statistics."
+                                              )
                                 ),
                                 mainPanel( width = 8,
                                            fluidRow(
@@ -107,17 +134,40 @@ shinyUI(navbarPage(title = "",
                                                               ".shiny-output-error { visibility: hidden; }",
                                                               ".shiny-output-error:before { visibility: hidden; }"
                                                    ),
-                                                   visNetwork::visNetworkOutput("visTest", height = "300px")
+                                                   introBox(
+                                                       visNetwork::visNetworkOutput("visTest", height = "300px"),
+                                                       data.step = 4,
+                                                       data.intro = "Your selections will be displayed here in a graph."
+                                                   )
                                                )
                                            ),
                                            fluidRow(
                                                div(class="panel panel-default",
-                                                   div(class="panel-body", 
+                                                   div(class="panel-body",  width = "600px",
                                                        tags$div(
                                                            align = "center",
-                                                           actionButton("goBack", label = "", icon = icon("arrow-circle-left", class = "fa-2x")),
+                                                           div(style="display: inline-block;vertical-align:top; width: 150px;",
+                                                               introBox(
+                                                                   actionButton("goBack", 
+                                                                                label = "Step Back", 
+                                                                                icon = icon("arrow-circle-left", class = "fa-2x")),
+                                                                   data.step = 3,
+                                                                   data.intro = "Clear your current selection and go back a step."
+                                                               )
+                                                           ),
+                                                           # div(style="display: inline-block;vertical-align:top; width: 150px;",
+                                                           #     uiOutput("clearBtns")
+                                                           # ),
                                                            # actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
-                                                           actionButton("btn1", label = "", icon = icon("arrow-circle-right", class = "fa-2x")),
+                                                           div(style="display: inline-block;vertical-align:top; width: 150px;",
+                                                               introBox(
+                                                                   actionButton("btn1", 
+                                                                                label = "Add", 
+                                                                                icon = icon("arrow-circle-right", class = "fa-2x")),
+                                                                   data.step = 2,
+                                                                   data.intro = "Confirm your selection by clicking here."
+                                                               )
+                                                           ),
                                                            checkboxInput('returnpdf', 'Save as PDF?', FALSE),
                                                            conditionalPanel(
                                                                condition = "input.returnpdf == true",
@@ -125,7 +175,11 @@ shinyUI(navbarPage(title = "",
                                                            )
                                                        ),
                                                        # Insert Table Output
-                                                       uiOutput("btns")
+                                                       introBox(
+                                                           uiOutput("btns"),
+                                                           data.step = 1, 
+                                                           data.intro = "Start by selecting your first career choice from our list of over 2,000 current job classifications."
+                                                       )
                                                    )
                                                ),
                                                fluidRow(
@@ -135,17 +189,6 @@ shinyUI(navbarPage(title = "",
                             )
                    ),  # Closes the second tabPanel called "Career PathFinder"
                    
-                   
-                   tabPanel("FAQ",
-                            
-                            fluidRow(
-                                style = "height:100px;"),
-                            
-                            fluidRow(
-                                column(3),
-                                column(7)
-                            )
-                   ),
                    tabPanel("About",
                             
                             fluidRow(
