@@ -23,6 +23,9 @@ load("./data/item_pairs_15.rda")
 load("./data/item_ref_30.rda")
 item_ref <- item_ref_30; rm(item_ref_30)
 
+# Load template for output report
+img <- png::readPNG("./www/pathImg.png")
+
 source("./www/getLink.R")
 
 shinyServer(function(input, output, session) {
@@ -61,13 +64,13 @@ shinyServer(function(input, output, session) {
     })
     
     # Go Back Button -----------------------------------------------------------
-
+    
     observeEvent( input$goBack, {
         
         if (values$data <= 5) {
             enable("btn1")
         }
-
+        
         values$data = values$data - 1
         
     })
@@ -91,10 +94,11 @@ shinyServer(function(input, output, session) {
     # Show/Hide Settings -----------------------------------------------------------------
     # Hide settings at start of new Shiny session
     observe(c(hide("selectData"),
-            hide("changeAvatar"),
-            hide("changeColor"),
-            hide("userName")
-            ))
+              hide("changeAvatar"),
+              hide("changeColor"),
+              hide("userName"),
+              hide("download")
+    ))
     
     # Toggle visibility of settings
     observeEvent(input$settings, {
@@ -142,6 +146,13 @@ shinyServer(function(input, output, session) {
                      label = "Search", 
                      onclick = link(),
                      icon = icon("external-link"))  # when clicked, the link() code executes
+    })
+    
+    # Start Button -------------------------------------------------------------
+    observeEvent(input$startBtn, {
+        updateNavbarPage(session, "navBar",
+                         selected = "careerPF"
+        )
     })
     
     # Select Input (First Job) -------------------------------------------------
@@ -274,13 +285,48 @@ shinyServer(function(input, output, session) {
     #     # values$data <- values$data - 1
     # })
     
-    # Test the outputs by printing to screen -----------------------------------
+    # User name ----------------------------------------------------------------
+    plotTitle <- reactive({
+        
+        if(input$userName == "") {
+            paste("Your Career Path")
+        } else {
+            paste(input$userName, "'s Career Path", sep = "")
+        }
+        
+    })
+    
+    
+    output$displayName <- renderUI({
+        tags$h4( plotTitle() )
+        
+    })
+    
+    # Print selections to sidebar -----------------------------------
     output$printSel <- renderPrint({
         paste("Value of Btn1 is:", values$data)
     })
     
-    output$printInput1 <- renderText({
-        paste("First selection is:", input$item_name)
+    output$printInput1 <- renderUI({
+        # Obtain stats
+        itemNo <- item_ref[ item_ref$TitleLong == input$item_name, "TitleCode"]
+        salary <- item_ref[ item_ref$TitleLong == input$item_name, "Salary"]
+        incumb <- item_ref[ item_ref$TitleLong == input$item_name, "Incumbents"]
+        
+        salary <- format(salary, big.mark = ",")
+        salary <- paste0("$", salary)
+        
+        # Display if item is selected
+        if(input$item_name == ""){
+            return()
+        } else {
+            div(class="panel panel-default",
+                div(class="panel-body",
+                    div(tags$h6( paste0("First selection: ", input$item_name, " (", itemNo, ")") ),
+                        paste0( "Max salary: ", salary, "/month - ", incumb, " incumbents") 
+                    )
+                ))
+        }
     })
     
     output$printTbl1 <- renderPrint({
@@ -322,7 +368,7 @@ shinyServer(function(input, output, session) {
     
     colorIcon <- reactive({
         switch(input$changeColor,
-               "blue" = "#97C2FC",
+               "blue" = "#0c84e4",
                "green" = "#10d13a", 
                "red" = "#f44141",     
                "black" = "#000000")     
@@ -351,10 +397,11 @@ shinyServer(function(input, output, session) {
         nodes$shape <- rep("icon", length(selections))
         nodes$icon.face <- rep('fontAwesome', length(selections))
         nodes$icon.code <- rep(avatar(), length(selections))
-        nodes$color <- rep(colorIcon(), length(selections))
+        # nodes$color <- rep(colorIcon(), length(selections))  
+        # Color is now added via icon options in visNodes()
         
         # Add shadow
-        nodes$shadow <- TRUE
+        # nodes$shadow <- TRUE
         
         # Keep only the rows that don't have errors
         nodes <- nodes[grep("Error", nodes$label, invert = TRUE),]
@@ -383,10 +430,70 @@ shinyServer(function(input, output, session) {
             visNetwork::visEdges(dashes = TRUE, shadow = TRUE, 
                                  arrows = list(to = list(enabled = TRUE, scaleFactor = 2)),
                                  color = list(color = "#587fb4", highlight = "red")) %>%
-            visNodes(shadow = list(enabled = TRUE, size = 15)) %>%
+            visNodes(shadow = list(enabled = TRUE, size = 15),
+                     icon = list( color = colorIcon() )) %>%
             visHierarchicalLayout(direction = "LR", levelSeparation = 220,
                                   parentCentralization = FALSE)
         # visLayout(randomSeed = 129)
     })
+    
+    # Output Report -----------------------------------------------------------
+    # PDF Report
+    plotInput <- reactive({
+        
+        if(input$returnpdf){
+            pdf("./www/my-career-path.pdf", width=as.numeric(8), height=as.numeric(11))
+            plot(cars, type = "n", axes = F, xlab = "", ylab = "")
+            lim <- par()
+            rasterImage(img, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4])
+            # Display job title 1
+            text(7, 77, labels = input$item_name, pos = 1, cex = 0.75)  
+            text(7, 77, labels = c("https://www.governmentjobs.com/careers/lacounty/classspecs?keywords=1912"), cex = 0.1, col= "white", pos = 3)  # Make link
+            # Display job title 2
+            text(12.5, 59, labels = top1()[ input$select2_rows_selected,  "Item2Name"], pos = 2, cex = 0.75)
+            text(14.5, 59, labels = c("https://www.governmentjobs.com/careers/lacounty/classspecs?keywords=1913"), cex = 0.1, col="white", pos = 1)
+            dev.off()
+        }
+        plot(rnorm(sample(100:200,1)), type = "n", axes = F, xlab = "", ylab = "")  # This is a 'decoy' plot that needs to render
+        
+    })
+    
+    # This plots the 'decoy' plot
+    output$myplot <- renderPlot({ plotInput() })  
+    
+    output$pdflink <- downloadHandler(
+        filename <- "my-career.pdf",
+        content <- function(file) {
+            file.copy("./www/my-career-path.pdf", file)
+        })
+    
+    # Generate the download link for UI only if the checkbox is checked
+    output$download <- renderUI({
+        if(input$returnpdf == FALSE){
+            return()
+        } else{
+            downloadLink('pdflink')
+        }
+    })
+    
+    # Delay showing the download link to buy time to generate the PDF
+    observeEvent(input$returnpdf,{
+        delay(3000, shinyjs::show("download") )
+    })
+    
+    # Survey link after the download button is clicked
+
+    onclick("download",
+        delay(5000, 
+              showModal(
+                  modalDialog(
+                      title = "Tell us what you think!",
+                      "We want to hear your thoughts on this career planning tool. Please take this 2 minute survey and your feedback will enhance this resource for year to come!", 
+                      tags$a(href="https://www.google.com", 
+                             target = "_blank", 
+                             "Click here for the survey"), 
+                      size = "m")))
+    )
+
     
 })

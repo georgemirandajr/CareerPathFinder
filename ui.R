@@ -15,7 +15,7 @@ library(shinyLP)
 
 source("carouselPanel.R")
 
-shinyUI(navbarPage(title = "",
+shinyUI(navbarPage(title = "", id = "navBar",
                    theme = "paper.css",
                    collapsible = TRUE,
                    inverse = TRUE,
@@ -27,7 +27,7 @@ shinyUI(navbarPage(title = "",
                        }",
                        "body {padding-top: 100px;}"),
                    
-                   tabPanel("Home",
+                   tabPanel("Home", value = "home",
                             
                             fluidRow(
                                 shiny::HTML("<br><br><center> <h1>Career PathFinder</h1> </center>
@@ -41,7 +41,8 @@ shinyUI(navbarPage(title = "",
                                 
                                 column(3,
                                        
-                                       h3("Explore Careers"),
+                                       HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>"),
+                                       
                                        h5("Discover the right path for you by leveraging over 30 years of County career data")
                                 ),
                                 column(5,
@@ -67,6 +68,34 @@ shinyUI(navbarPage(title = "",
                             ),
                             fluidRow(
                                 column(3),
+
+                                column(2,
+                                    div(class="panel panel-default",
+                                        div(class="panel-body",  width = "600px",
+                                            tags$div(
+                                                align = "center"
+                                            )))
+                                    ),
+                                column(2,
+                                    div(class="panel panel-default",
+                                        div(class="panel-body",  width = "600px",
+                                            tags$div(
+                                                align = "center"
+                                            )))
+                                    ),
+                                column(2,
+                                    div(class="panel panel-default",
+                                        div(class="panel-body",  width = "600px",
+                                            tags$div(
+                                                align = "center"
+                                            )))
+                                ),
+                                column(3),
+                                
+                                style = "height:250px;"),
+                            
+                            fluidRow(
+                                column(3),
                                 column(6, 
                                        wellPanel("If you are unsure about how to start your career path, you can browse through job descriptions at", tags$a("governmentjobs.com", href = "https://www.governmentjobs.com/careers/lacounty/classspecs" )),
                                        textInput("searchTerm", label = "Search Jobs:",
@@ -79,12 +108,26 @@ shinyUI(navbarPage(title = "",
                                 column(3)
                             ),
                             
+                            fluidRow(style = "height:100px;"
+                            ),
+                            fluidRow(shiny::HTML("<br><br><center> <h1>Ready to Get Started?</h1> </center>
+                                            <br>")
+                            ),
+                            fluidRow(
+                                column(3),
+                                column(6,
+                                       tags$div(align = "center", 
+                                                actionButton("startBtn", "Start")
+                                       ) 
+                                ),
+                                column(3)
+                            ),
                             fluidRow(style = "height:250px;"
                             )
                             
                    ), # Closes the first tabPanel called "Home"
                    
-                   tabPanel("Career PathFinder",
+                   tabPanel("Career PathFinder", value = "careerPF",
                             
                             sidebarLayout(
                                 
@@ -100,7 +143,7 @@ shinyUI(navbarPage(title = "",
                                                            inline = TRUE,
                                                            width = "100%"
                                               ),
-                                              selectizeInput("changeAvatar", "Change Avatar:",
+                                              selectizeInput("changeAvatar", "Change Icon:",
                                                              choices = c("Circle" = "circle", 
                                                                          "Map Marker" = "map-marker", 
                                                                          "Rocket" = "rocket", 
@@ -112,11 +155,9 @@ shinyUI(navbarPage(title = "",
                                                                          "Green" = "green", 
                                                                          "Red" = "red",
                                                                          "Black" = "black")
-                                                             ),
+                                              ),
                                               textInput("userName", "Add your name:", value = ""),
                                               
-                                              uiOutput("tstAvatar")
-                                              ,
                                               introBox(
                                                   actionLink("settings", "Settings", 
                                                              icon = icon("sliders", class = "fa-2x")),
@@ -129,16 +170,17 @@ shinyUI(navbarPage(title = "",
                                 ),
                                 mainPanel( width = 8,
                                            fluidRow(
-                                               wellPanel(
-                                                   tags$style(type="text/css",
-                                                              ".shiny-output-error { visibility: hidden; }",
-                                                              ".shiny-output-error:before { visibility: hidden; }"
-                                                   ),
-                                                   introBox(
-                                                       visNetwork::visNetworkOutput("visTest", height = "300px"),
-                                                       data.step = 4,
-                                                       data.intro = "Your selections will be displayed here in a graph."
-                                                   )
+                                               wellPanel(uiOutput("displayName"),
+                                                         tags$style(type="text/css",
+                                                                    ".shiny-output-error { visibility: hidden; }",
+                                                                    ".shiny-output-error:before { visibility: hidden; }"
+                                                         ),
+                                                         introBox(
+                                                             
+                                                             visNetwork::visNetworkOutput("visTest", height = "250px"),
+                                                             data.step = 4,
+                                                             data.intro = "Your selections will be displayed here in a graph."
+                                                         )
                                                )
                                            ),
                                            fluidRow(
@@ -169,10 +211,8 @@ shinyUI(navbarPage(title = "",
                                                                )
                                                            ),
                                                            checkboxInput('returnpdf', 'Save as PDF?', FALSE),
-                                                           conditionalPanel(
-                                                               condition = "input.returnpdf == true",
-                                                               downloadLink('pdflink')
-                                                           )
+                                                           useShinyjs(),
+                                                           uiOutput("download")
                                                        ),
                                                        # Insert Table Output
                                                        introBox(
@@ -183,28 +223,69 @@ shinyUI(navbarPage(title = "",
                                                    )
                                                ),
                                                fluidRow(
-                                                   style = "height:150px;")
+                                                   style = "height:150px;"),
+                                               plotOutput("myplot")
                                            )
                                 )
                             )
                    ),  # Closes the second tabPanel called "Career PathFinder"
                    
-                   tabPanel("About",
+                   tabPanel("About", value = "about",
                             
                             fluidRow(
-                                style = "height:100px;"),
-                            
+                                shiny::HTML("<br><br><center> 
+                                            <h1>About Career PathFinder</h1> 
+                                            <h4>What's behind the data.</h4>
+                                            </center>
+                                            <br>
+                                            <br>"),
+                                style = "height:250px;"),
                             fluidRow(
-                                column(5),
-                                column(5,
-                                       h3("Awards", icon("trophy", "fa-4x")),
-                                       h5(em("Gold Eagle Award, 2018")), 
-                                       h5("Quality & Productivity Commission")
+                                div(align = "center",
+                                    tags$span(h4("A Brief History of Los Angeles County's Career PathFinder"), 
+                                              style = "font-weight:bold"
+                                    ))
+                            ),
+                            fluidRow(
+                                column(3),
+                                column(6,
+                                       tags$ul(
+                                           tags$li("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce at efficitur dui. Duis convallis facilisis pretium. Vestibulum maximus suscipit eleifend. Sed odio ex, tempor a mauris faucibus, vestibulum ullamcorper sapien. Sed ornare bibendum tortor, non venenatis neque placerat at."), 
+                                           tags$li("Aliquam cursus pellentesque augue, eu sagittis nisi feugiat vel. Nunc a ultrices sapien, ac mollis velit. "), 
+                                           tags$li("Sed laoreet turpis sit amet finibus pharetra. Ut congue, orci ut congue mollis, nisi turpis pretium augue, non lacinia augue ligula a dui. Aenean in neque vitae purus bibendum facilisis. ")
+                                       )
+                                ),
+                                column(3)
+                            ),
+                            fluidRow(
+                                column(2),
+                                column(8,
+                                       # Panel for WED
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  
+                                               tags$div(
+                                                   align = "center", 
+                                                   "Workforce and Employee Development Team"
+                                               )
+                                           )
+                                       ), # Closes div panel
                                        
-                                )
-                            )
-                            
-                   )
+                                       # Panel for Something else
+                                       div(class="panel panel-default",
+                                           div(class="panel-body", 
+                                               tags$div(
+                                                   align = "center", 
+                                                   "Quality and Productivity Commission"
+                                               )
+                                           )
+                                       ) # Closes div panel
+                                ), # Closes column
+                                column(2)
+                            ),
+                            fluidRow(style = "height:150px;")
+                   )  # Closes About tab
                    
 )
+
 )
+
