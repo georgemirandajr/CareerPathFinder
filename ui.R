@@ -21,6 +21,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                    inverse = TRUE,
                    windowTitle = "Los Angeles County Career PathFinder",
                    position = "fixed-top",
+                   footer = includeHTML("./www/include_footer.html"),
                    header = tags$style(
                        ".navbar-right {
                            float: right !important;
@@ -28,6 +29,18 @@ shinyUI(navbarPage(title = "", id = "navBar",
                        "body {padding-top: 100px;}"),
                    
                    tabPanel("Home", value = "home",
+                            
+                            tags$head(tags$script(HTML('
+                                var fakeClick = function(tabName) {
+                                  var dropdownList = document.getElementsByTagName("a");
+                                  for (var i = 0; i < dropdownList.length; i++) {
+                                    var link = dropdownList[i];
+                                    if(link.getAttribute("data-value") == tabName) {
+                                      link.click();
+                                    };
+                                  }
+                                };
+                              '))),
                             
                             fluidRow(
                                 shiny::HTML("<br><br><center> <h1>Career PathFinder</h1> </center>
@@ -48,7 +61,8 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 column(5,
                                        
                                        carouselPanel(auto.advance=F,
-                                                     tags$a(href = "#FAQ", tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
+                                                     tags$a(href = "#FAQ", 
+                                                            tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
                                                      
                                                      tags$a(href = "https://geom.shinyapps.io/word", tags$img(src = "screen_capture_word_2.jpg", width = "615px"))
                                                      
@@ -58,7 +72,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             
                             fluidRow(
                                 
-                                style = "height:250px;"),
+                                style = "height:50px;"),
                             
                             tags$hr(),
                             
@@ -66,33 +80,63 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 shiny::HTML("<br><br><center> <h1>Career Planning Made Easy.</h1> </center>
                                             <br>")
                             ),
+                            # Brief Instructions
                             fluidRow(
                                 column(3),
-
+                                
                                 column(2,
-                                    div(class="panel panel-default",
-                                        div(class="panel-body",  width = "600px",
-                                            tags$div(
-                                                align = "center"
-                                            )))
-                                    ),
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  width = "600px",
+                                               tags$div( 
+                                                   align = "center",
+                                                   tags$img(src = "one.svg", 
+                                                            width = "50px", height = "50px"),
+                                                   "Pick your starting classification"
+                                               )))
+                                ),
                                 column(2,
-                                    div(class="panel panel-default",
-                                        div(class="panel-body",  width = "600px",
-                                            tags$div(
-                                                align = "center"
-                                            )))
-                                    ),
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  width = "600px",
+                                               tags$div(
+                                                   align = "center",
+                                                   tags$img(src = "two.svg", 
+                                                            width = "50px", height = "50px"),
+                                                   "Review your choices and select your next career step"
+                                               )))
+                                ),
                                 column(2,
-                                    div(class="panel panel-default",
-                                        div(class="panel-body",  width = "600px",
-                                            tags$div(
-                                                align = "center"
-                                            )))
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  width = "600px",
+                                               tags$div(
+                                                   align = "center",
+                                                   tags$img(src = "three.svg", 
+                                                            width = "50px", height = "50px"),
+                                                   "Continue until you're ready to print out your personalized report"
+                                               )))
                                 ),
                                 column(3),
                                 
                                 style = "height:250px;"),
+                            
+                            fluidRow(
+                                column(3),
+                                column(6,
+                                       tags$embed(src = "https://player.vimeo.com/video/8419440",
+                                                  width = "640", height = "360")
+                                ),
+                                column(3)
+                            ),
+                            
+                            fluidRow(
+                                
+                                style = "height:50px;"),
+                            
+                            tags$hr(),
+                            
+                            fluidRow(
+                                shiny::HTML("<br><br><center> <h1>Start Planning Today.</h1> </center>
+                                            <br>")
+                            ),
                             
                             fluidRow(
                                 column(3),
@@ -117,8 +161,10 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 column(3),
                                 column(6,
                                        tags$div(align = "center", 
-                                                actionButton("startBtn", "Start")
-                                       ) 
+                                           tags$a("Start", 
+                                                  onclick="fakeClick('careerPF')", 
+                                                  class="btn btn-primary btn-lg")
+                                       )
                                 ),
                                 column(3)
                             ),

@@ -71,8 +71,29 @@ shinyServer(function(input, output, session) {
             enable("btn1")
         }
         
-        values$data = values$data - 1
-        
+        if( values$data == 5 & !is.null(input$select5_rows_selected) ) {
+            showModal(
+                modalDialog("Remove your selection before going back.", size = "s",
+                            footer = modalButton(label = "", icon = icon("close")))
+            )
+        } else if ( values$data == 4 & !is.null(input$select4_rows_selected) ) {
+            showModal(
+                modalDialog("Remove your selection before going back.", size = "s",
+                            footer = modalButton(label = "", icon = icon("close")))
+            )
+        } else if ( values$data == 3 & !is.null(input$select3_rows_selected) ) {
+            showModal(
+                modalDialog("Remove your selection before going back.", size = "s",
+                            footer = modalButton(label = "", icon = icon("close")))
+            )
+        } else if ( values$data == 2 & !is.null(input$select2_rows_selected) ) {
+            showModal(
+                modalDialog("Remove your selection before going back.", size = "s",
+                            footer = modalButton(label = "", icon = icon("close")))
+            )
+        } else {
+            values$data = values$data - 1
+        }
     })
     
     # Disable btn1 when step 5 is reached
@@ -177,7 +198,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$select2 <- DT::renderDataTable({
-        datatable( top1(), escape = FALSE, 
+        datatable( top1(), escape = FALSE,
                    options = list(
                        lengthMenu = c(10, 20)),
                    selection = list(mode = 'single', target = 'row'),
@@ -482,18 +503,18 @@ shinyServer(function(input, output, session) {
     })
     
     # Survey link after the download button is clicked
-
+    
     onclick("download",
-        delay(5000, 
-              showModal(
-                  modalDialog(
-                      title = "Tell us what you think!",
-                      "We want to hear your thoughts on this career planning tool. Please take this 2 minute survey and your feedback will enhance this resource for year to come!", 
-                      tags$a(href="https://www.google.com", 
-                             target = "_blank", 
-                             "Click here for the survey"), 
-                      size = "m")))
+            delay(5000, 
+                  showModal(
+                      modalDialog(
+                          title = "Tell us what you think!",
+                          "We want to hear your thoughts on this career planning tool. Please take this 2 minute survey and your feedback will enhance this resource for year to come!", 
+                          tags$a(href="https://www.google.com", 
+                                 target = "_blank", 
+                                 "Click here for the survey"), 
+                          size = "m")))
     )
-
+    
     
 })
