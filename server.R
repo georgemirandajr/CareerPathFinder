@@ -5,8 +5,11 @@
 # http://shiny.rstudio.com
 #
 
+# Work PC uses: rsconnect 0.4.3 
+
 # Initialize the user selections and tooltip (title)
 selections <- vector(mode = "character", length = 0)
+edgeLabels <- vector(mode = "character", length = 0)
 
 # Initialize empty data.frames for nodes and edges
 nodes <- data.frame(id = integer(), label = character(), title = character(), 
@@ -31,7 +34,8 @@ source("./www/getLink.R")
 shinyServer(function(input, output, session) {
     
     # DT Options
-    options(DT.options = list( lengthMenu = c(10, 20) ))
+    options(DT.options = list( lengthMenu = c(10, 20),
+                               dom = 'tl'))  # table and lengthMenu options
     
     # Intro JS ----------------------------------------------------------------
     observeEvent(input$help,
@@ -73,22 +77,26 @@ shinyServer(function(input, output, session) {
         
         if( values$data == 5 & !is.null(input$select5_rows_selected) ) {
             showModal(
-                modalDialog("Remove your selection before going back.", size = "s",
+                modalDialog("Please remove your selection before going back.", size = "s",
+                            title = "Oops!",
                             footer = modalButton(label = "", icon = icon("close")))
             )
         } else if ( values$data == 4 & !is.null(input$select4_rows_selected) ) {
             showModal(
-                modalDialog("Remove your selection before going back.", size = "s",
+                modalDialog("Please remove your selection before going back.", size = "s",
+                            title = "Oops!",
                             footer = modalButton(label = "", icon = icon("close")))
             )
         } else if ( values$data == 3 & !is.null(input$select3_rows_selected) ) {
             showModal(
-                modalDialog("Remove your selection before going back.", size = "s",
+                modalDialog("Please remove your selection before going back.", size = "s",
+                            title = "Oops!",
                             footer = modalButton(label = "", icon = icon("close")))
             )
         } else if ( values$data == 2 & !is.null(input$select2_rows_selected) ) {
             showModal(
-                modalDialog("Remove your selection before going back.", size = "s",
+                modalDialog("Please remove your selection before going back.", size = "s",
+                            title = "Oops!",
                             footer = modalButton(label = "", icon = icon("close")))
             )
         } else {
@@ -178,7 +186,7 @@ shinyServer(function(input, output, session) {
     
     # Select Input (First Job) -------------------------------------------------
     output$select1 <- renderUI({
-        selectizeInput("item_name", label = "Step 1:",
+        selectizeInput("item_name", label = "",
                        choices = item_ref$TitleLong,
                        width = "100%",
                        options = list(
@@ -194,19 +202,27 @@ shinyServer(function(input, output, session) {
     top1 <- reactive({
         
         top <- dplyr::filter(item_pairs(), Item1Name == input$item_name) %>%
-            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+            select(Item2Name, Item2, Prob, Salary2Min, SalaryDiff, Incumbents, Hyperlink)
     })
     
     output$select2 <- DT::renderDataTable({
         datatable( top1(), escape = FALSE,
-                   options = list(
-                       lengthMenu = c(10, 20)),
                    selection = list(mode = 'single', target = 'row'),
-                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
-                   rownames = FALSE, style = "bootstrap", caption = "Step 2:"
+                   colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", 
+                   callback = JS("
+var tips = ['Classification Title', 'Title Code', 'Percent of employees that moved into that job from your last selected job',
+                                 'Starting salary', 'Difference between the highest possible salaries for the selected jobs',
+                                'Number of employees currently holding the title', 'Link to requirements and description'],
+                                 header = table.columns().header();
+                                 for (var i = 0; i < tips.length; i++) {
+                                 $(header[i]).attr('title', tips[i]);
+                                 }
+                                 ")
         ) %>%
             formatCurrency('SalaryDiff') %>% 
-            formatPercentage('Prob', 1)
+            formatPercentage('Prob', 1) %>%
+            formatCurrency("Salary2Min")
     })
     
     outputOptions(output, "select2", suspendWhenHidden = FALSE)
@@ -225,18 +241,28 @@ shinyServer(function(input, output, session) {
         itemName <- top1()[ input$select2_rows_selected,  "Item2Name"]
         
         top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
-            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+            select(Item2Name, Item2, Prob, Salary2Min, SalaryDiff, Incumbents, Hyperlink)
         top
     })
     
     output$select3 <- DT::renderDataTable({
-        datatable( top2(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+        datatable( top2(), escape = FALSE, 
                    selection = list(mode = 'single', target = 'row'),
-                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
-                   rownames = FALSE, style = "bootstrap", caption = "Step 3:"
-        ) %>%
+                   colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", 
+                   callback = JS("
+                                 var tips = ['Classification Title', 'Title Code', 'Percent of employees that moved into that job from your last selected job',
+                                 'Starting salary', 'Difference between the highest possible salaries for the selected jobs',
+                                 'Number of employees currently holding the title', 'Link to requirements and description'],
+                                 header = table.columns().header();
+                                 for (var i = 0; i < tips.length; i++) {
+                                 $(header[i]).attr('title', tips[i]);
+                                 }
+                                 ")
+                   ) %>%
             formatCurrency('SalaryDiff') %>% 
-            formatPercentage('Prob', 1)
+            formatPercentage('Prob', 1) %>%
+            formatCurrency("Salary2Min")
     })
     
     outputOptions(output, "select3", suspendWhenHidden = FALSE)
@@ -254,18 +280,28 @@ shinyServer(function(input, output, session) {
         itemName <- top2()[ input$select3_rows_selected,  "Item2Name"]
         
         top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
-            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+            select(Item2Name, Item2, Prob, Salary2Min, SalaryDiff, Incumbents, Hyperlink)
         top
     })
     
     output$select4 <- DT::renderDataTable({
-        datatable( top3(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+        datatable( top3(), escape = FALSE, 
                    selection = list(mode = 'single', target = 'row'),
-                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
-                   rownames = FALSE, style = "bootstrap", caption = "Step 4:"
-        ) %>%
+                   colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", 
+                   callback = JS("
+                                 var tips = ['Classification Title', 'Title Code', 'Percent of employees that moved into that job from your last selected job',
+                                 'Starting salary', 'Difference between the highest possible salaries for the selected jobs',
+                                 'Number of employees currently holding the title', 'Link to requirements and description'],
+                                 header = table.columns().header();
+                                 for (var i = 0; i < tips.length; i++) {
+                                 $(header[i]).attr('title', tips[i]);
+                                 }
+                                 ")
+                   ) %>%
             formatCurrency('SalaryDiff') %>% 
-            formatPercentage('Prob', 1)
+            formatPercentage('Prob', 1) %>%
+            formatCurrency("Salary2Min")
     })
     
     outputOptions(output, "select4", suspendWhenHidden = FALSE)
@@ -283,18 +319,28 @@ shinyServer(function(input, output, session) {
         itemName <- top3()[ input$select4_rows_selected,  "Item2Name"]
         
         top <- dplyr::filter(item_pairs(), Item1Name == itemName) %>%
-            select(Item2Name, Item2, Prob, SalaryDiff, Incumbents, Hyperlink)
+            select(Item2Name, Item2, Prob, Salary2Min, SalaryDiff, Incumbents, Hyperlink)
         top
     })
     
     output$select5 <- DT::renderDataTable({
-        datatable( top4(), escape = FALSE, options = list(lengthMenu = c(10, 20)),
+        datatable( top4(), escape = FALSE, 
                    selection = list(mode = 'single', target = 'row'),
-                   colnames = c("Title", "Item Number", "%", "Salary Difference", "Incumbents", "Job Description"),
-                   rownames = FALSE, style = "bootstrap", caption = "Step 5:"
-        ) %>%
+                   colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
+                   rownames = FALSE, style = "bootstrap", 
+                   callback = JS("
+                                 var tips = ['Classification Title', 'Title Code', 'Percent of employees that moved into that job from your last selected job',
+                                 'Starting salary', 'Difference between the highest possible salaries for the selected jobs',
+                                 'Number of employees currently holding the title', 'Link to requirements and description'],
+                                 header = table.columns().header();
+                                 for (var i = 0; i < tips.length; i++) {
+                                 $(header[i]).attr('title', tips[i]);
+                                 }
+                                 ")
+                   ) %>%
             formatCurrency('SalaryDiff') %>% 
-            formatPercentage('Prob', 1)
+            formatPercentage('Prob', 1) %>%
+            formatCurrency("Salary2Min")
     })
     
     outputOptions(output, "select5", suspendWhenHidden = FALSE)
@@ -328,14 +374,33 @@ shinyServer(function(input, output, session) {
         paste("Value of Btn1 is:", values$data)
     })
     
+    output$stepNo <- renderUI({
+        if(values$data == 1) {
+            tags$h4("Step 1:")
+        } else if (values$data == 2) {
+            tags$h4("Step 2:")
+        } else if (values$data == 3) {
+            tags$h4("Step 3:")
+        } else if (values$data == 4) {
+            tags$h4("Step 4:")
+        } else if (values$data >= 5) {
+            tags$h4("Step 5:")
+        }
+        
+    })
+    
     output$printInput1 <- renderUI({
         # Obtain stats
         itemNo <- item_ref[ item_ref$TitleLong == input$item_name, "TitleCode"]
-        salary <- item_ref[ item_ref$TitleLong == input$item_name, "Salary"]
+        salaryMin <- item_ref[ item_ref$TitleLong == input$item_name, "SalaryMin"]
+        salaryMax <- item_ref[ item_ref$TitleLong == input$item_name, "SalaryMax"]
         incumb <- item_ref[ item_ref$TitleLong == input$item_name, "Incumbents"]
         
-        salary <- format(salary, big.mark = ",")
-        salary <- paste0("$", salary)
+        salaryMax <- format(salaryMax, big.mark = ",")
+        salaryMax <- paste0("$", salaryMax)
+        
+        salaryMin <- format(salaryMin, big.mark = ",")
+        salaryMin <- paste0("$", salaryMin)
         
         # Display if item is selected
         if(input$item_name == ""){
@@ -343,8 +408,121 @@ shinyServer(function(input, output, session) {
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$h6( paste0("First selection: ", input$item_name, " (", itemNo, ")") ),
-                        paste0( "Max salary: ", salary, "/month - ", incumb, " incumbents") 
+                    div(tags$img(src = "one.svg", width = "25px", height = "25px"), tags$h6( paste0(input$item_name, " (", itemNo, ")") ),
+                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        div(paste0(incumb, " incumbents"))
+                    )
+                ))
+        }
+    })
+    
+    output$printInput2 <- renderUI({
+        # Obtain stats
+        itemName <- top1()[ input$select2_rows_selected,  "Item2Name"]
+        itemNo <- top1()[ input$select2_rows_selected,  "Item2"]
+        salaryMin <- top1()[ input$select2_rows_selected,  "Salary2Min"] 
+        salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
+        incumb <- top1()[ input$select2_rows_selected,  "Incumbents"]
+        
+        salaryMax <- format(salaryMax, big.mark = ",")
+        salaryMax <- paste0("$", salaryMax)
+        
+        salaryMin <- format(salaryMin, big.mark = ",")
+        salaryMin <- paste0("$", salaryMin)
+        
+        # Display if item is selected
+        if( is.null(input$select2_rows_selected) ){
+            return()
+        } else {
+            div(class="panel panel-default",
+                div(class="panel-body",
+                    div(tags$img(src = "two.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
+                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        div(paste0(incumb, " incumbents"))
+                    )
+                ))
+        }
+    })
+    
+    output$printInput3 <- renderUI({
+        # Obtain stats
+        itemName <- top2()[ input$select3_rows_selected,  "Item2Name"]
+        itemNo <- top2()[ input$select3_rows_selected,  "Item2"]
+        salaryMin <- top2()[ input$select3_rows_selected,  "Salary2Min"] 
+        salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
+        incumb <- top2()[ input$select3_rows_selected,  "Incumbents"]
+        
+        salaryMax <- format(salaryMax, big.mark = ",")
+        salaryMax <- paste0("$", salaryMax)
+        
+        salaryMin <- format(salaryMin, big.mark = ",")
+        salaryMin <- paste0("$", salaryMin)
+        
+        # Display if item is selected
+        if( is.null(input$select3_rows_selected) ){
+            return()
+        } else {
+            div(class="panel panel-default",
+                div(class="panel-body",
+                    div(tags$img(src = "three.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
+                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        div(paste0(incumb, " incumbents"))
+                    )
+                ))
+        }
+    })
+    
+    output$printInput4 <- renderUI({
+        # Obtain stats
+        itemName <- top3()[ input$select4_rows_selected,  "Item2Name"]
+        itemNo <- top3()[ input$select4_rows_selected,  "Item2"]
+        salaryMin <- top3()[ input$select4_rows_selected,  "Salary2Min"] 
+        salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
+        incumb <- top3()[ input$select4_rows_selected,  "Incumbents"]
+        
+        salaryMax <- format(salaryMax, big.mark = ",")
+        salaryMax <- paste0("$", salaryMax)
+        
+        salaryMin <- format(salaryMin, big.mark = ",")
+        salaryMin <- paste0("$", salaryMin)
+        
+        # Display if item is selected
+        if( is.null(input$select4_rows_selected) ){
+            return()
+        } else {
+            div(class="panel panel-default",
+                div(class="panel-body",
+                    div(tags$img(src = "four.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
+                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        div(paste0(incumb, " incumbents"))
+                    )
+                ))
+        }
+    })
+    
+    output$printInput5 <- renderUI({
+        # Obtain stats
+        itemName <- top4()[ input$select5_rows_selected,  "Item2Name"]
+        itemNo <- top4()[ input$select5_rows_selected,  "Item2"]
+        salaryMin <- top4()[ input$select5_rows_selected,  "Salary2Min"] 
+        salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
+        incumb <- top4()[ input$select5_rows_selected,  "Incumbents"]
+        
+        salaryMax <- format(salaryMax, big.mark = ",")
+        salaryMax <- paste0("$", salaryMax)
+        
+        salaryMin <- format(salaryMin, big.mark = ",")
+        salaryMin <- paste0("$", salaryMin)
+        
+        # Display if item is selected
+        if( is.null(input$select5_rows_selected) ){
+            return()
+        } else {
+            div(class="panel panel-default",
+                div(class="panel-body",
+                    div(tags$img(src = "five.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
+                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        div(paste0(incumb, " incumbents"))
                     )
                 ))
         }
@@ -440,7 +618,22 @@ shinyServer(function(input, output, session) {
             for ( i in 1:(num_selections-1) ) {
                 edges[i, ] <- c( i, i+1, 200)
             }
+        
         edges
+    })
+    
+    # Under Development - Adding popularity percentage to edge label 
+    edgeLab <- reactive({
+        prob1 <- try( top1()[ input$select2_rows_selected,  "Prob"], TRUE ) 
+        prob2 <- try( top2()[ input$select3_rows_selected,  "Prob"], TRUE ) 
+        prob3 <- try( top3()[ input$select4_rows_selected,  "Prob"], TRUE ) 
+        prob4 <- try( top4()[ input$select5_rows_selected,  "Prob"], TRUE ) 
+        
+        # Collect user selections
+        edgeLabels <- c(prob1, prob2, prob3, prob4)
+        
+        # Keep only the rows that don't have errors
+        edgeLabels <- edgeLabels[grep("Error", edgeLabels, invert = TRUE)]
     })
     
     # Creating the dynamic graph

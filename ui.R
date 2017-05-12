@@ -4,8 +4,8 @@
 #
 # http://shiny.rstudio.com
 #
-packages <- c("dplyr", "tidyr", "lubridate", "knitr", "stringr", 
-              "igraph", "networkD3", "shiny", "png", "shinyjs", 
+packages <- c("dplyr", "knitr", "stringr", 
+              "networkD3", "shiny", "png", "shinyjs", 
               "visNetwork", "DT", "rintrojs")
 
 sapply(packages, require, character.only = TRUE)
@@ -29,6 +29,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                        "body {padding-top: 100px;}"),
                    
                    tabPanel("Home", value = "home",
+                            
                             
                             tags$head(tags$script(HTML('
                                 var fakeClick = function(tabName) {
@@ -161,9 +162,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 column(3),
                                 column(6,
                                        tags$div(align = "center", 
-                                           tags$a("Start", 
-                                                  onclick="fakeClick('careerPF')", 
-                                                  class="btn btn-primary btn-lg")
+                                                tags$a("Start", 
+                                                       onclick="fakeClick('careerPF')", 
+                                                       class="btn btn-primary btn-lg")
                                        )
                                 ),
                                 column(3)
@@ -180,8 +181,14 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 sidebarPanel( width = 3,
                                               introjsUI(),
                                               
+                                              tags$div(
+                                                  actionButton("help", "Take a Quick Tour"),
+                                                  style = "height:50px;"
+                                              ),
                                               useShinyjs(),
                                               
+                                              tags$div(
+                                                  style = "height:50px;",
                                               radioButtons("selectData", 
                                                            label = "How many years of data do you want to include?",
                                                            choices = c("30 Years",
@@ -205,13 +212,23 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                               textInput("userName", "Add your name:", value = ""),
                                               
                                               introBox(
+                                                  tags$div(
+                                                      style = "height:50px;",
                                                   actionLink("settings", "Settings", 
-                                                             icon = icon("sliders", class = "fa-2x")),
-                                                  br(),
-                                                  actionButton("help", "Take a Quick Tour"),
+                                                             icon = icon("sliders", class = "fa-2x"))),
+                                                  
+                                                  tags$div(
+                                                      style = "height:50px;",
+                                                  
                                                   uiOutput("printInput1"),
+                                                  uiOutput("printInput2"),
+                                                  uiOutput("printInput3"),
+                                                  uiOutput("printInput4"),
+                                                  uiOutput("printInput5")
+                                                  ),
                                                   data.step = 5,
                                                   data.intro = "Settings is where you can set options that affect the graph and career statistics."
+                                              )
                                               )
                                 ),
                                 mainPanel( width = 8,
@@ -232,33 +249,42 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                            fluidRow(
                                                div(class="panel panel-default",
                                                    div(class="panel-body",  width = "600px",
-                                                       tags$div(
-                                                           align = "center",
-                                                           div(style="display: inline-block;vertical-align:top; width: 150px;",
-                                                               introBox(
-                                                                   actionButton("goBack", 
-                                                                                label = "Back", 
-                                                                                icon = icon("arrow-circle-left", class = "fa-2x")),
-                                                                   data.step = 3,
-                                                                   data.intro = "Clear your current selection and go back a step."
-                                                               )
-                                                           ),
-                                                           # div(style="display: inline-block;vertical-align:top; width: 150px;",
-                                                           #     uiOutput("clearBtns")
-                                                           # ),
-                                                           # actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
-                                                           div(style="display: inline-block;vertical-align:top; width: 150px;",
-                                                               introBox(
-                                                                   actionButton("btn1", 
-                                                                                label = "Add", 
-                                                                                icon = icon("arrow-circle-right", class = "fa-2x")),
-                                                                   data.step = 2,
-                                                                   data.intro = "Confirm your selection by clicking here."
-                                                               )
-                                                           ),
-                                                           checkboxInput('returnpdf', 'Save as PDF?', FALSE),
-                                                           useShinyjs(),
-                                                           uiOutput("download")
+                                                       tags$div(class = "wrap",
+                                                                div(class = "left", 
+                                                                    style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    uiOutput("stepNo")
+                                                                ),
+                                                                div(class = "right",
+                                                                    style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    checkboxInput('returnpdf', 'Save as PDF?', FALSE),
+                                                                    uiOutput("download")
+                                                                ),
+                                                                div(class = "center",
+                                                                    style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    introBox(
+                                                                        actionButton("goBack", 
+                                                                                     label = "Back", 
+                                                                                     icon = icon("arrow-circle-left", class = "fa-2x"),
+                                                                                     width= "100px", height= "40px"),
+                                                                        data.step = 3,
+                                                                        data.intro = "Go back a step to edit your selection anytime."
+                                                                    )
+                                                                ),
+                                                                # div(style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                #     uiOutput("clearBtns")
+                                                                # ),
+                                                                # actionButton("resetBtn", "Reset All", icon = icon("refresh", class = "fa-2x")),    
+                                                                div(class = "center",
+                                                                    style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    introBox(
+                                                                        actionButton("btn1", 
+                                                                                     label = "Add", 
+                                                                                     icon = icon("arrow-circle-right", class = "fa-2x"),
+                                                                                     width= "100px", height= "40px"),
+                                                                        data.step = 2,
+                                                                        data.intro = "Confirm your selection by clicking here."
+                                                                    )
+                                                                )
                                                        ),
                                                        # Insert Table Output
                                                        introBox(
