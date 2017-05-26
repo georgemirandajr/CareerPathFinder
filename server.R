@@ -30,10 +30,11 @@ item_ref <- item_ref_30; rm(item_ref_30)
 img <- png::readPNG("./www/pathImg.png")
 
 source("./www/getLink.R")
+source("./www/make_breaks.R")
 
 shinyServer(function(input, output, session) {
     
-    # DT Options
+    # DT Options --------------------------------------------------------------
     options(DT.options = list( lengthMenu = c(10, 20),
                                dom = 'tl'))  # table and lengthMenu options
     
@@ -155,12 +156,12 @@ shinyServer(function(input, output, session) {
     })
     
     # Reset Button -------------------------------------------------------------
-    useShinyjs()
-    observeEvent( input$resetBtn, {
-        values$data = 1
-        shinyjs::enable("btn1")
-        selections <- vector(mode = "character", length = 0)
-    })
+    # useShinyjs()
+    # observeEvent( input$resetBtn, {
+    #     values$data = 1
+    #     shinyjs::enable("btn1")
+    #     selections <- vector(mode = "character", length = 0)
+    # })
     
     # Search NeoGov ------------------------------------------------------------
     link <- eventReactive(input$searchTerm, {
@@ -190,7 +191,7 @@ shinyServer(function(input, output, session) {
                        choices = item_ref$TitleLong,
                        width = "100%",
                        options = list(
-                           placeholder = 'Select the start of your path:',
+                           placeholder = 'Start your path by choosing from one of our jobs.',
                            onInitialize = I('function() { this.setValue(""); }'))
         )
     })
@@ -225,7 +226,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             formatCurrency("Salary2Min")
     })
     
-    outputOptions(output, "select2", suspendWhenHidden = FALSE)
+    # outputOptions(output, "select2", suspendWhenHidden = FALSE)
     
     proxy1 = dataTableProxy('select2')
     
@@ -259,13 +260,13 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                                  $(header[i]).attr('title', tips[i]);
                                  }
                                  ")
-                   ) %>%
+        ) %>%
             formatCurrency('SalaryDiff') %>% 
             formatPercentage('Prob', 1) %>%
             formatCurrency("Salary2Min")
     })
     
-    outputOptions(output, "select3", suspendWhenHidden = FALSE)
+    # outputOptions(output, "select3", suspendWhenHidden = FALSE)
     
     proxy2 = dataTableProxy('select3')
     
@@ -298,13 +299,13 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                                  $(header[i]).attr('title', tips[i]);
                                  }
                                  ")
-                   ) %>%
+        ) %>%
             formatCurrency('SalaryDiff') %>% 
             formatPercentage('Prob', 1) %>%
             formatCurrency("Salary2Min")
     })
     
-    outputOptions(output, "select4", suspendWhenHidden = FALSE)
+    # outputOptions(output, "select4", suspendWhenHidden = FALSE)
     
     proxy3 = dataTableProxy('select4')
     
@@ -337,13 +338,13 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                                  $(header[i]).attr('title', tips[i]);
                                  }
                                  ")
-                   ) %>%
+        ) %>%
             formatCurrency('SalaryDiff') %>% 
             formatPercentage('Prob', 1) %>%
             formatCurrency("Salary2Min")
     })
     
-    outputOptions(output, "select5", suspendWhenHidden = FALSE)
+    # outputOptions(output, "select5", suspendWhenHidden = FALSE)
     
     proxy4 = dataTableProxy('select5')
     
@@ -370,15 +371,14 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     })
     
     # Print selections to sidebar -----------------------------------
-    output$printSel <- renderPrint({
-        paste("Value of Btn1 is:", values$data)
-    })
     
+    # Show the user the current step they are on
     output$stepNo <- renderUI({
         if(values$data == 1) {
             tags$h4("Step 1:")
         } else if (values$data == 2) {
-            tags$h4("Step 2:")
+            # tags$h4("Step 2:")
+            div(tags$h4("Step 2:"), div(tags$h6("Choose from one of the jobs in the table below")))
         } else if (values$data == 3) {
             tags$h4("Step 3:")
         } else if (values$data == 4) {
@@ -389,6 +389,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
     })
     
+    # Print each selection to a panel in sidebar
     output$printInput1 <- renderUI({
         # Obtain stats
         itemNo <- item_ref[ item_ref$TitleLong == input$item_name, "TitleCode"]
@@ -409,7 +410,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             div(class="panel panel-default",
                 div(class="panel-body",
                     div(tags$img(src = "one.svg", width = "25px", height = "25px"), tags$h6( paste0(input$item_name, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        paste0( salaryMin, " - ", salaryMax, " /month"), 
                         div(paste0(incumb, " incumbents"))
                     )
                 ))
@@ -437,7 +438,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             div(class="panel panel-default",
                 div(class="panel-body",
                     div(tags$img(src = "two.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        paste0( salaryMin, " - ", salaryMax, " /month"), 
                         div(paste0(incumb, " incumbents"))
                     )
                 ))
@@ -465,7 +466,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             div(class="panel panel-default",
                 div(class="panel-body",
                     div(tags$img(src = "three.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        paste0( salaryMin, " - ", salaryMax, " /month"), 
                         div(paste0(incumb, " incumbents"))
                     )
                 ))
@@ -493,7 +494,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             div(class="panel panel-default",
                 div(class="panel-body",
                     div(tags$img(src = "four.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        paste0( salaryMin, " - ", salaryMax, " /month"), 
                         div(paste0(incumb, " incumbents"))
                     )
                 ))
@@ -521,36 +522,12 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
             div(class="panel panel-default",
                 div(class="panel-body",
                     div(tags$img(src = "five.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month - "), 
+                        paste0( salaryMin, " - ", salaryMax, " /month"), 
                         div(paste0(incumb, " incumbents"))
                     )
                 ))
         }
     })
-    
-    output$printTbl1 <- renderPrint({
-        paste("Row selected from Table 1 is:", input$select2_rows_selected,
-              "and the selection is:", top1()[ input$select2_rows_selected,  "Item2Name"])
-    })
-    
-    output$printTbl2 <- renderPrint({
-        paste("Row selected from Table 2 is:", input$select3_rows_selected,
-              "and the selection is:", top2()[ input$select3_rows_selected,  "Item2Name"])
-    })
-    
-    output$printTbl3 <- renderPrint({
-        paste("Row selected from Table 3 is:", input$select4_rows_selected,
-              "and the selection is:", top3()[ input$select4_rows_selected,  "Item2Name"])
-    })
-    
-    
-    output$printTbl4 <- renderPrint({
-        paste("Row selected from Table 4 is:", input$select5_rows_selected,
-              "and the selection is:", top4()[ input$select5_rows_selected,  "Item2Name"])
-    })
-    
-    output$printNodeTbl <- renderTable(visNode())
-    output$printEdgeTbl <- renderTable(visEdge())
     
     
     # Visualization ------------------------------------------------------------
@@ -585,6 +562,9 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         selections <- append(selections,
                              c(item_name1, item_name2, item_name3,
                                item_name4, item_name5))
+        
+        # Insert line breaks where there's more than 2 words in a title
+        selections <- sapply(selections, make_breaks, simplify = "array", USE.NAMES = FALSE)
         
         # Add selections to data.frame
         nodes[1:length(selections),2] <- selections
@@ -636,19 +616,35 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         edgeLabels <- edgeLabels[grep("Error", edgeLabels, invert = TRUE)]
     })
     
+    # Set the seed (layout) for the graph based on number of nodes in graph
+    visSeed <- reactive({
+        if( nrow(visNode()) == 1 ) {
+            1
+        } else if ( nrow(visNode()) == 2 ) {
+            6
+        } else if ( nrow(visNode()) == 3 ) {
+            21
+        } else if ( nrow(visNode()) == 4 ) {
+            30
+        } else if ( nrow(visNode()) == 5 ) {
+            5432
+        }
+    })
+    
     # Creating the dynamic graph
     output$visTest <- visNetwork::renderVisNetwork({
+
+        # The below uses a different random seed to determine layout based on num of nodes
         
-        visNetwork::visNetwork(visNode(), visEdge(), height = "100px", width = "100%") %>%
+        visNetwork::visNetwork(visNode(), visEdge(), height = "275px", width = "100%") %>%
             addFontAwesome() %>%
-            visNetwork::visEdges(dashes = TRUE, shadow = TRUE, 
+            visNetwork::visEdges(dashes = TRUE, shadow = TRUE,
                                  arrows = list(to = list(enabled = TRUE, scaleFactor = 2)),
                                  color = list(color = "#587fb4", highlight = "red")) %>%
             visNodes(shadow = list(enabled = TRUE, size = 15),
                      icon = list( color = colorIcon() )) %>%
-            visHierarchicalLayout(direction = "LR", levelSeparation = 220,
-                                  parentCentralization = FALSE)
-        # visLayout(randomSeed = 129)
+            visLayout(randomSeed = visSeed() ) %>%
+            visPhysics(solver = "barnesHut", stabilization = list(enabled = FALSE))
     })
     
     # Output Report -----------------------------------------------------------
@@ -672,7 +668,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
     })
     
-    # This plots the 'decoy' plot
+    # This plots the blank 'decoy' plot
     output$myplot <- renderPlot({ plotInput() })  
     
     output$pdflink <- downloadHandler(
@@ -706,8 +702,13 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                           tags$a(href="https://www.google.com", 
                                  target = "_blank", 
                                  "Click here for the survey"), 
-                          size = "m")))
+                          size = "m", 
+                          footer = modalButton(label = "Maybe later", icon = icon("close") )
+                      )
+                  ))
     )
     
+    # Navbar ------------------------------------------------------------------
+    shinyjs::addClass(id = "navBar", class = "navbar-right")
     
 })

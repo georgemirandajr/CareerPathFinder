@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
+@import url('https://fonts.googleapis.com/css?family=Lato');
+@import url('https://fonts.googleapis.com/css?family=Droid+Serif');
 /*!
     * bootswatch v3.3.7
 * Homepage: http://bootswatch.com
@@ -13,7 +15,7 @@
 */
     /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
     html {
-        font-family: sans-serif;
+        font-family: 'Lato', sans-serif;  /*/ font-family: sans-serif; /*/
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
     }
@@ -1086,7 +1088,7 @@ html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Lato', sans-serif;  /*/ font change from-- font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; /*/
     font-size: 13px;
     line-height: 1.846;
     color: #666666;
@@ -1604,7 +1606,7 @@ pre code {
 
 }
 .center{
-text-align:left;
+text-align:center;
 
     margin:0 auto !important; 
    display:inline-block
@@ -3456,10 +3458,11 @@ fieldset[disabled] .btn-link:focus {
 }
 .btn-lg,
 .btn-group-lg > .btn {
-    padding: 20px 46px;  /* 10px 16px;  <-- original size */
-    font-size: 22px; /*/ 17 px /*/
+    padding: 10px 16px;  /* 10px 16px;  <-- original size  20px 46px <----BIGGER SIZE */
+    font-size: 19px; /*/ 17 px - BIGGER WAS 22px /*/
     line-height: 1.3333333;
     border-radius: 3px;
+    white-space: normal;
 }
 .btn-sm,
 .btn-group-sm > .btn {
@@ -4187,11 +4190,12 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     border-top-left-radius: 0;
 }
 .navbar {
-    position: relative;
-    min-height: 64px;
-    margin-bottom: 23px;
+    position: relative;  
+    min-height: 64px;              /*/ 64 /*/
+    margin-bottom: 23px;            /*/ 23 /*/
     border: 1px solid transparent;
 }
+
 @media (min-width: 768px) {
     .navbar {
         border-radius: 3px;
@@ -4297,9 +4301,9 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-brand {
     float: left;
     padding: 20.5px 15px;
-    font-size: 17px;
+    font-size: 17px;   /*/ 17 /*/
     line-height: 23px;
-    height: 64px;
+    height: 64px;    /*/ 64 /*/
 }
 .navbar-brand:hover,
 .navbar-brand:focus {
@@ -6013,7 +6017,7 @@ button.close {
     position: absolute;
     z-index: 1070;
     display: block;
-    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;  /*/ font change from-- font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif; /*/
     font-style: normal;
     font-weight: normal;
     letter-spacing: normal;
@@ -6807,7 +6811,7 @@ button.close {
 }
 .btn-default {
     position: relative;
-    background-color: #0c84e4;
+    background-color: #0c84e4;  /*/ button and button text color/*/
     color: white;
 }
 .btn-default:focus {
@@ -7694,4 +7698,224 @@ input[type="checkbox"]:disabled:checked:after,
 .carousel-caption h5,
 .carousel-caption h6 {
     color: inherit;
+}
+
+.band.full {
+  position: relative;
+}
+
+.band.full.first {
+  height: 550px;
+}
+
+.band.full.second {
+  height: 480px;
+
+  overflow: hidden;
+  border-bottom: 1px solid #f8f8f8;
+}
+
+.band.full.third {
+  height: 520px;
+}
+
+.bandContent, .standardPadding .articleBandContent {
+  margin: 0 auto;
+  max-width: 1140px;
+}
+
+.band .imageOne {
+  position: absolute;
+  left: 0px;
+  bottom: -120px;
+  width: 630px;
+  height: auto;
+
+  z-index: 5;
+}
+
+.band .imageTwo {
+  position: absolute;
+  top: 10%;
+  right: 10px;
+  width: 45%;
+  height: auto;
+}
+
+.band .imageThree {
+  position: absolute;
+  left: 10px;
+  bottom: 0px;
+  width: 500px;
+  height: auto;
+
+  z-index: 5;
+}
+
+#rStudioFooter {
+  position: relative;
+  z-index: 2;
+
+  box-sizing: border-box;
+  height: 91px;
+}
+
+#rStudioFooter.band {
+
+  background-color: #0c7cd5; /*/ 75aadb  /*/
+  padding: 30px 5%;
+
+  color: #fff;
+
+  font-weight: 300;
+  font-size: 12px;
+
+  line-height: 25px;
+}
+
+#rStudioFooter .bandContent {
+  color: #fff;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  line-height: 20px;
+}
+
+#rStudioFooter .bandContent #copyright {
+  flex-shrink: 5;
+}
+
+#rStudioFooter .bandContent #logos {
+  flex-shrink: 1;
+}
+
+#rStudioFooter .bandContent .footerLogo {
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: center center;
+
+  margin: 0 8px;
+}
+
+#rStudioFooter .bandContent #logos .footerLogo:last-child {
+  margin-right: 0px;
+}
+
+#rStudioFooter .bandContent .footerLogo.twitter {
+  background-image: url(../images/twitterLogo.svg);
+}
+
+#rStudioFooter .bandContent .footerLogo.gitHub {
+  background-image: url(../images/gitHubLogo2.svg);
+}
+
+#rStudioFooter .bandContent .footerLogo.linkedIn {
+  background-image: url(../images/linkedInLogo.svg);
+}
+
+#rStudioFooter .bandContent .footerLogo.facebook {
+  background-image: url(../images/FB-f-Logo__white_29.png);
+}
+
+@media screen and (max-width: 1200px){
+
+  .band .imageOne {
+    width: 490px;
+    bottom: -50px;
+    left: -25px;
+  }
+
+  .band .imageThree {
+    left: 0px;
+  }
+}
+
+@media screen and (max-width: 350px){
+
+    #rStudioHeader .productName {
+      font-size: 26px;
+    }
+
+    #rStudioFooter .bandContent .footerLogo {
+      margin: 0 2px;
+    }
+
+}
+
+.footer-basic-centered{
+	background-color: #0c7cd5;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+	font: normal 18px sans-serif;
+
+	padding: 45px;
+	margin-top: 80px;
+}
+
+.footer-basic-centered .footer-company-motto{
+	color:  #f7f7f7;
+	font-size: 24px;
+	font-weight: bold;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-company-name{
+	color:  #f7f7f7;
+	font-size: 12px;
+	margin: 0;
+	margin-top: 40px;
+}
+
+.footer-basic-centered .footer-disclaimer{
+	color:  #f7f7f7;
+	font-size: 14px;
+	margin: 10px;
+}
+
+.footer-basic-centered .footer-links{
+	list-style: none;
+	font-weight: bold;
+	color:  #ffffff;
+	padding: 35px 0 23px;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-links a{
+	display:inline-block;
+	text-decoration: none;
+	color: inherit;
+}
+
+/* If you don't want the footer to be responsive, remove these media queries */
+
+@media (max-width: 600px) {
+
+	.footer-basic-centered{
+		padding: 35px;
+	}
+
+	.footer-basic-centered .footer-company-motto{
+		font-size: 18px;
+	}
+
+	.footer-basic-centered .footer-company-name{
+		font-size: 12px;
+	}
+
+	.footer-basic-centered .footer-links{
+		font-size: 14px;
+		padding: 25px 0 20px;
+	}
+
+	.footer-basic-centered .footer-links a{
+		line-height: 1.8;
+	}
 }
