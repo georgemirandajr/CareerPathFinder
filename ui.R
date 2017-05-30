@@ -14,6 +14,14 @@ library(rintrojs)
 
 source("carouselPanel.R")
 
+# Panel div for visualization
+# override the currently broken definition in shinyLP version 1.1.0
+panel_div <- function(class_type, content) {
+    div(class = sprintf("panel panel-%s", class_type),
+        div(class = "panel-body", content)
+    )
+}
+
 shinyUI(navbarPage(title = "", id = "navBar",
                    theme = "paper.css",
                    collapsible = TRUE,
@@ -51,17 +59,29 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             #     style = "height:250px;"),
                             
                             fluidRow(
+                                style = "height:250px;",
+                                shiny::HTML("<center> <h1>Welcome to the Career PathFinder</h2></center>"),
+                                shiny::HTML("<center> <h5><i>Like stops on a map, a career path pinpoints your next job, 
+                                            the job after that, and beyond.</i></h5> </center>")
+                            ),
+                            
+                            fluidRow(
+                                column(2),
                                 
-                                column(12,
+                                column(3,
+                                       HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>")
+                                       ),
+                                
+                                column(5,
                                        
                                        carouselPanel(
                                            # tags$a(href = "#FAQ", 
                                            #        tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
-                                           tags$img(src = "Barbara.svg", width = "298px", height = "450px"),
-                                           tags$img(src = "Dylan.svg", width = "298px", height = "450px"),
-                                           tags$img(src = "Joseph.svg", width = "298px", height = "450px"),
-                                           tags$img(src = "Matt.svg", width = "298px", height = "450px"),
-                                           tags$img(src = "Parker.svg", width = "298px", height = "450px")
+                                           tags$img(src = "Barbara_resp.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "Dylan_resp.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "Joseph_resp.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "Matt_resp.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "Parker_resp.svg", class = "img-responsive center-block")
                                            # tags$a(href = "https://geom.shinyapps.io/word", tags$img(src = "screen_capture_word_2.jpg", width = "615px"))
                                            
                                        )
@@ -76,8 +96,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 style = "height:250px;",
                                 shiny::HTML("<center> <h4><i>Are you looking to plan a career with the County?</i></h4> </center>"),
                                 shiny::HTML("<center> <h4><i>Are you curious about the paths real County employees have taken?</i></h4></center>"),
-                                shiny::HTML("<center> <h4><i>Then you're in the right place.</i></h4></center>"),
-                                shiny::HTML("<center> <h1>Welcome to the Career PathFinder</h2></center>")
+                                shiny::HTML("<center> <h4><i>Then you're in the right place.</i></h4></center>")
                             ),
                             
                             fluidRow(
@@ -239,7 +258,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                            div(class="panel-body",  width = "600px",
                                                align = "center",
                                                div(
-                                                   tags$img(src = "man_beard(1).svg", 
+                                                   tags$img(src = "man_beard_1.svg", 
                                                             width = "50px", height = "50px")
                                                ),
                                                div(
@@ -295,7 +314,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                            div(class="panel-body",  width = "600px", 
                                                align = "center",
                                                div(
-                                                   tags$img(src = "man_beard(1).svg", 
+                                                   tags$img(src = "man_beard_2.svg", 
                                                             width = "50px", height = "50px")),
                                                div(
                                                    tags$h5("David"),
@@ -454,12 +473,6 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                                              "Street View" = "street-view", 
                                                                              "Leaf" = "leaf")
                                                   ),
-                                                  selectizeInput("changeColor", "Icon Color:",
-                                                                 choices = c("Blue" = "blue", 
-                                                                             "Green" = "green", 
-                                                                             "Red" = "red",
-                                                                             "Black" = "black")
-                                                  ),
                                                   textInput("userName", "Add your name:", value = ""),
                                                   
                                                   introBox(
@@ -477,24 +490,27 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                           uiOutput("printInput4"),
                                                           uiOutput("printInput5")
                                                       ),
-                                                      data.step = 5,
+                                                      data.step = 6,
                                                       data.intro = "Settings is where you can set options that affect the graph and career statistics."
                                                   )
                                               )
                                 ),
                                 mainPanel( width = 8,
                                            fluidRow(
-                                               wellPanel(uiOutput("displayName"),
-                                                         tags$style(type="text/css",
-                                                                    ".shiny-output-error { visibility: hidden; }",
-                                                                    ".shiny-output-error:before { visibility: hidden; }"
-                                                         ),
-                                                         introBox(
-                                                             
-                                                             visNetwork::visNetworkOutput("visTest", height = "200px"),
-                                                             data.step = 4,
-                                                             data.intro = "Your selections will be displayed here in a graph."
-                                                         )
+                                               
+                                               tags$style(type="text/css",
+                                                          ".shiny-output-error { visibility: hidden; }",
+                                                          ".shiny-output-error:before { visibility: hidden; }"
+                                               ),
+                                               introBox(
+                                                   panel_div(class_type = "default",
+                                                             content = tags$div(
+                                                                 uiOutput("displayName"),
+                                                                 visNetwork::visNetworkOutput("visTest", height = "200px")
+                                                             )
+                                                   ),
+                                                   data.step = 4,
+                                                   data.intro = "Your selections will be displayed here in a graph."
                                                )
                                            ),
                                            fluidRow(
@@ -507,7 +523,10 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                                 ),
                                                                 div(class = "right",
                                                                     style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    introBox(
                                                                     checkboxInput('returnpdf', 'Save as PDF?', FALSE),
+                                                                    data.step = 5, data.intro = "Stay on track with your plans by downloading your path."
+                                                                    ),
                                                                     uiOutput("download")
                                                                 ),
                                                                 div(class = "center",

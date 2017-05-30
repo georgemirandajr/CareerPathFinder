@@ -32,24 +32,24 @@ carouselPanel <- function(..., auto.advance=FALSE){
         if( !auto.advance ){
             singleton(tags$head(tags$script("$(document).ready(function(){
                                             $('.carousel').carousel({
-                                            interval: 3500
+                                            interval: 5000
                                             });
         });")))
       }else{
           singleton(tags$head(tags$script("$(document).ready(function(){
                                           $('.carousel').carousel({
-                                          interval: 2000
+                                          interval: 5000
                                           });
                                           });")))
       },
       
       #Set up carousel
       div(id=paste0("carousel-", n), class="carousel slide", `data-interval`=tolower(as.character(auto.advance)),
-          # Coursel Inner Div - contains the content to display
+          # Carousel Inner Div - contains the content to display
           div(class="carousel-inner",
-              div(class="item active", contents[[1]], style="padding: 0px 0px;"), # padding = top, sides in pixels
+              div(class="item active", contents[[1]], style="padding: 0 0;"), # padding = top, sides in pixels
               mapply(function(elm){
-                  list(div(class="item", elm, style="padding: 0px 0px;"))
+                  list(div(class="item", elm, style="padding: 0 0;"))
               }, contents[2:length(contents)], SIMPLIFY=F, USE.NAMES=F)),
           
           # Carousel controls

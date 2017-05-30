@@ -125,7 +125,6 @@ shinyServer(function(input, output, session) {
     # Hide settings at start of new Shiny session
     observe(c(hide("selectData"),
               hide("changeAvatar"),
-              hide("changeColor"),
               hide("userName"),
               hide("download")
     ))
@@ -134,7 +133,6 @@ shinyServer(function(input, output, session) {
     observeEvent(input$settings, {
         shinyjs::toggle("selectData", anim = TRUE)  # toggle is a shinyjs function
         shinyjs::toggle("changeAvatar", anim = TRUE)
-        shinyjs::toggle("changeColor", anim = TRUE)
         shinyjs::toggle("userName", anim = TRUE)
     })
     
@@ -543,11 +541,14 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     })
     
     colorIcon <- reactive({
-        switch(input$changeColor,
-               "blue" = "#0c84e4",
-               "green" = "#10d13a", 
-               "red" = "#f44141",     
-               "black" = "#000000")     
+        # Automatically change avatar color based on avatar selection
+        switch(input$changeAvatar,
+               "circle" = "#0c84e4",      # Blue
+               "map-marker" = "#000000",  # Black
+               "rocket" = "#f44141",      # Red
+               "street-view" = "#663096", # Purple
+               "leaf" = "#10d13a"         # Green
+               )
     })
     
     visNode <- reactive({
