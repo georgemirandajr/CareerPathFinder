@@ -10,6 +10,7 @@
 # Initialize the user selections and tooltip (title)
 selections <- vector(mode = "character", length = 0)
 edgeLabels <- vector(mode = "character", length = 0)
+tips <- vector(mode = "character", length = 0)
 
 # Initialize empty data.frames for nodes and edges
 nodes <- data.frame(id = integer(), label = character(), title = character(), 
@@ -27,7 +28,11 @@ load("./data/item_ref_30.rda")
 item_ref <- item_ref_30; rm(item_ref_30)
 
 # Load template for output report
-img <- png::readPNG("./www/pathImg.png")
+# img <- png::readPNG("./www/pathImg.png")  old image template
+# img5 <- png::readPNG("./www/pathImage_5.png")  # template for 5 selections
+# img4 <- png::readPNG("./www/pathImage_4.png")  # template for 4 selections
+# img3 <- png::readPNG("./www/pathImage_3.png")  # and so on...
+# img2 <- png::readPNG("./www/pathImage_2.png")  # ...
 
 source("./www/getLink.R")
 source("./www/make_breaks.R")
@@ -368,9 +373,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
     })
     
-    # Print selections to sidebar -----------------------------------
-    
-    # Show the user the current step they are on
+    # Show the current step -------------------
     output$stepNo <- renderUI({
         if(values$data == 1) {
             tags$h4("Step 1:")
@@ -387,8 +390,9 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
     })
     
-    # Print each selection to a panel in sidebar
-    output$printInput1 <- renderUI({
+    # Get selection data for printing, etc. -----------------------------------
+    
+    job_1_data <- reactive({
         # Obtain stats
         itemNo <- item_ref[ item_ref$TitleLong == input$item_name, "TitleCode"]
         salaryMin <- item_ref[ item_ref$TitleLong == input$item_name, "SalaryMin"]
@@ -401,33 +405,61 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         salaryMin <- format(salaryMin, big.mark = ",")
         salaryMin <- paste0("$", salaryMin)
         
+        v <- c(input$item_name, itemNo, salaryMin, salaryMax, incumb)
+        
+        v
+        
+    })
+    
+    # Print each selection to a panel in sidebar
+    output$printInput1 <- renderUI({
         # Display if item is selected
         if(input$item_name == ""){
             return()
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$img(src = "one.svg", width = "25px", height = "25px"), tags$h6( paste0(input$item_name, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month"), 
-                        div(paste0(incumb, " incumbents"))
+                    div(tags$img(src = "one.svg", width = "25px", height = "25px"), tags$h6( paste0(input$item_name, " (", job_1_data()[2], ")") ),
+                        paste0( job_1_data()[3], " - ", job_1_data()[4], " /month"), 
+                        div(paste0(job_1_data()[5], " incumbents"))
                     )
                 ))
         }
     })
     
-    output$printInput2 <- renderUI({
+    # Create label for output report
+    label_1 <- reactive({
+        
+        lab <- paste0( input$item_name, "\n",
+                       job_1_data()[3], " - ", job_1_data()[4], " Monthly",
+                       " | ", job_1_data()[5], " Incumbents")
+        
+        lab
+    })
+    
+    job_2_data <- reactive({
         # Obtain stats
         itemName <- top1()[ input$select2_rows_selected,  "Item2Name"]
         itemNo <- top1()[ input$select2_rows_selected,  "Item2"]
         salaryMin <- top1()[ input$select2_rows_selected,  "Salary2Min"] 
         salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
         incumb <- top1()[ input$select2_rows_selected,  "Incumbents"]
+        prob <- top1()[ input$select2_rows_selected,  "Prob"]
         
         salaryMax <- format(salaryMax, big.mark = ",")
         salaryMax <- paste0("$", salaryMax)
         
         salaryMin <- format(salaryMin, big.mark = ",")
         salaryMin <- paste0("$", salaryMin)
+        
+        prob <- paste0( round( prob*100, 1 ), "%" )
+        
+        v <- c(itemName, itemNo, salaryMin, salaryMax, incumb, prob)
+        
+        v
+    })
+    
+    output$printInput2 <- renderUI({
         
         # Display if item is selected
         if( is.null(input$select2_rows_selected) ){
@@ -435,27 +467,49 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$img(src = "two.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month"), 
-                        div(paste0(incumb, " incumbents"))
+                    div(tags$img(src = "two.svg", width = "25px", height = "25px"), tags$h6( paste0(job_2_data()[1], " (", job_2_data()[2], ")") ),
+                        paste0( job_2_data()[3], " - ", job_2_data()[4], " /month"), 
+                        div(paste0(job_2_data()[5], " incumbents"))
                     )
                 ))
         }
     })
     
-    output$printInput3 <- renderUI({
+    label_2 <- reactive({
+        
+        try(
+            paste0( job_2_data()[1], "\n",
+                    job_2_data()[3], " - ", job_2_data()[4], " Monthly", "\n",
+                    job_2_data()[6], " Popularity", " | ", job_2_data()[5], " Incumbents"),
+            
+            TRUE
+        )
+        
+    })
+    
+    job_3_data <- reactive({
         # Obtain stats
         itemName <- top2()[ input$select3_rows_selected,  "Item2Name"]
         itemNo <- top2()[ input$select3_rows_selected,  "Item2"]
         salaryMin <- top2()[ input$select3_rows_selected,  "Salary2Min"] 
         salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
         incumb <- top2()[ input$select3_rows_selected,  "Incumbents"]
+        prob <- top2()[ input$select3_rows_selected,  "Prob"]
         
         salaryMax <- format(salaryMax, big.mark = ",")
         salaryMax <- paste0("$", salaryMax)
         
         salaryMin <- format(salaryMin, big.mark = ",")
         salaryMin <- paste0("$", salaryMin)
+        
+        prob <- paste0( round( prob*100, 1 ), "%" )
+        
+        v <- c(itemName, itemNo, salaryMin, salaryMax, incumb, prob)
+        
+        v
+    })
+    
+    output$printInput3 <- renderUI({
         
         # Display if item is selected
         if( is.null(input$select3_rows_selected) ){
@@ -463,27 +517,48 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$img(src = "three.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month"), 
-                        div(paste0(incumb, " incumbents"))
+                    div(tags$img(src = "three.svg", width = "25px", height = "25px"), tags$h6( paste0(job_3_data()[1], " (", job_3_data()[2], ")") ),
+                        paste0( job_3_data()[3], " - ", job_3_data()[4], " /month"), 
+                        div(paste0(job_3_data()[5], " incumbents"))
                     )
                 ))
         }
     })
     
-    output$printInput4 <- renderUI({
+    label_3 <- reactive({
+        
+        try(
+            paste0( job_3_data()[1], "\n",
+                           job_3_data()[3], " - ", job_3_data()[4], " Monthly", "\n",
+                           job_3_data()[6], " Popularity", " | ", job_3_data()[5], " Incumbents"),
+            TRUE
+        )
+        
+    })
+    
+    job_4_data <- reactive({
         # Obtain stats
         itemName <- top3()[ input$select4_rows_selected,  "Item2Name"]
         itemNo <- top3()[ input$select4_rows_selected,  "Item2"]
         salaryMin <- top3()[ input$select4_rows_selected,  "Salary2Min"] 
         salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
         incumb <- top3()[ input$select4_rows_selected,  "Incumbents"]
+        prob <- top3()[ input$select4_rows_selected,  "Prob"]
         
         salaryMax <- format(salaryMax, big.mark = ",")
         salaryMax <- paste0("$", salaryMax)
         
         salaryMin <- format(salaryMin, big.mark = ",")
         salaryMin <- paste0("$", salaryMin)
+        
+        prob <- paste0( round( prob*100, 1 ), "%" )
+        
+        v <- c(itemName, itemNo, salaryMin, salaryMax, incumb, prob)
+        
+        v
+    })
+    
+    output$printInput4 <- renderUI({
         
         # Display if item is selected
         if( is.null(input$select4_rows_selected) ){
@@ -491,21 +566,32 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$img(src = "four.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month"), 
-                        div(paste0(incumb, " incumbents"))
+                    div(tags$img(src = "four.svg", width = "25px", height = "25px"), tags$h6( paste0(job_4_data()[1], " (", job_4_data()[2], ")") ),
+                        paste0( job_4_data()[3], " - ", job_4_data()[4], " /month"), 
+                        div(paste0(job_4_data()[5], " incumbents"))
                     )
                 ))
         }
     })
     
-    output$printInput5 <- renderUI({
+    label_4 <- reactive({
+        try(
+            paste0( job_4_data()[1], "\n",
+                           job_4_data()[3], " - ", job_4_data()[4], " Monthly", "\n",
+                           job_4_data()[6], " Popularity", " | ", job_4_data()[5], " Incumbents"),
+            TRUE
+        )
+        
+    })
+    
+    job_5_data <- reactive({
         # Obtain stats
         itemName <- top4()[ input$select5_rows_selected,  "Item2Name"]
         itemNo <- top4()[ input$select5_rows_selected,  "Item2"]
         salaryMin <- top4()[ input$select5_rows_selected,  "Salary2Min"] 
         salaryMax <- item_ref[ which( itemName == item_ref$TitleLong ), "SalaryMax" ]
         incumb <- top4()[ input$select5_rows_selected,  "Incumbents"]
+        prob <- top4()[ input$select5_rows_selected,  "Prob"]
         
         salaryMax <- format(salaryMax, big.mark = ",")
         salaryMax <- paste0("$", salaryMax)
@@ -513,20 +599,38 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         salaryMin <- format(salaryMin, big.mark = ",")
         salaryMin <- paste0("$", salaryMin)
         
+        prob <- paste0( round( prob*100, 1 ), "%" )
+        
+        v <- c(itemName, itemNo, salaryMin, salaryMax, incumb, prob)
+        
+        v
+    })
+    
+    output$printInput5 <- renderUI({
+        
         # Display if item is selected
         if( is.null(input$select5_rows_selected) ){
             return()
         } else {
             div(class="panel panel-default",
                 div(class="panel-body",
-                    div(tags$img(src = "five.svg", width = "25px", height = "25px"), tags$h6( paste0(itemName, " (", itemNo, ")") ),
-                        paste0( salaryMin, " - ", salaryMax, " /month"), 
-                        div(paste0(incumb, " incumbents"))
+                    div(tags$img(src = "five.svg", width = "25px", height = "25px"), tags$h6( paste0(job_5_data()[1], " (", job_5_data()[2], ")") ),
+                        paste0( job_5_data()[3], " - ", job_5_data()[4], " /month"), 
+                        div(paste0(job_5_data()[5], " incumbents"))
                     )
                 ))
         }
     })
     
+    label_5 <- reactive({
+        
+        try(
+            paste0( job_5_data()[1], "\n",
+                           job_5_data()[3], " - ", job_5_data()[4], " Monthly", "\n",
+                           job_5_data()[6], " Popularity", " | ", job_5_data()[5], " Incumbents"),
+            TRUE
+        )
+    })
     
     # Visualization ------------------------------------------------------------
     
@@ -548,7 +652,12 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                "rocket" = "#f44141",      # Red
                "street-view" = "#663096", # Purple
                "leaf" = "#10d13a"         # Green
-               )
+        )
+    })
+    
+    tip1 <- reactive({
+        paste0( "<h6>", job_1_data()[1], "</h6>")
+        
     })
     
     visNode <- reactive({
@@ -564,11 +673,17 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                              c(item_name1, item_name2, item_name3,
                                item_name4, item_name5))
         
+        # tips <- append(tips,
+        #                c(tip1(), tip2(), tip3(), tip4(), tip5() ))
+        
         # Insert line breaks where there's more than 2 words in a title
         selections <- sapply(selections, make_breaks, simplify = "array", USE.NAMES = FALSE)
         
         # Add selections to data.frame
         nodes[1:length(selections),2] <- selections
+        
+        # # Add tips to data.frame
+        # nodes[1:length(tips), 3] <- tips
         
         # Add id
         nodes$id <- 1:length(selections)
@@ -634,7 +749,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     
     # Creating the dynamic graph
     output$visTest <- visNetwork::renderVisNetwork({
-
+        
         # The below uses a different random seed to determine layout based on num of nodes
         
         visNetwork::visNetwork(visNode(), visEdge(), height = "275px", width = "100%") %>%
@@ -649,23 +764,91 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     })
     
     # Output Report -----------------------------------------------------------
+    # Report template is chosen based on the number of job selections made
+    template <- reactive({
+        if( nrow(visNode()) == 1 ) {
+            ""
+        } else if ( nrow(visNode()) == 2 ) {
+            png::readPNG("./www/pathImage_2.png")
+        } else if ( nrow(visNode()) == 3 ) {
+            png::readPNG("./www/pathImage_3.png")
+        } else if ( nrow(visNode()) == 4 ) {
+            png::readPNG("./www/pathImage_4.png")
+        } else if ( nrow(visNode()) == 5 ) {
+            png::readPNG("./www/pathImage_5.png")
+        }
+    })
+    
+    # Determine how many plot labels are needed for the output report
+    plot_labels <- reactive({
+        if( nrow(visNode()) == 1 ) {
+            # Display job title 1
+            text(25, 105, labels = label_1(), col = "white", pos = 2, cex = 0.75)
+            
+        } else if ( nrow(visNode()) == 2 ) {
+            # Display job title 1
+            text(25, 105, labels = label_1(), col = "white", pos = 2, cex = 0.75)
+            
+            # Display job title 2
+            text(5.5, 42, labels = label_2(), col = "white", pos = 4, cex = 0.75)
+        } else if ( nrow(visNode()) == 3 ) {
+            # Display job title 1
+            text(25, 105, labels = label_1(), col = "white", pos = 2, cex = 0.75)
+            
+            # Display job title 2
+            text(5.5, 42, labels = label_2(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 3
+            text(5.5, 33, labels = label_3(), col = "white", pos = 4, cex = 0.75)
+        } else if ( nrow(visNode()) == 4 ) {
+            # Display job title 1
+            text(25, 105, labels = label_1(), col = "white", pos = 2, cex = 0.75)
+            
+            # Display job title 2
+            text(5.5, 42, labels = label_2(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 3
+            text(5.5, 33, labels = label_3(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 4
+            text(5.5, 24.5, labels = label_4(), col = "white", pos = 4, cex = 0.75)
+        } else if ( nrow(visNode()) == 5 ) {
+            # Display job title 1
+            text(25, 105, labels = label_1(), col = "white", pos = 2, cex = 0.75)
+            
+            # Display job title 2
+            text(5.5, 42, labels = label_2(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 3
+            text(5.5, 33, labels = label_3(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 4
+            text(5.5, 24.5, labels = label_4(), col = "white", pos = 4, cex = 0.75)
+            
+            # Display job title 5
+            text(5.5, 15, labels = label_5(), col = "white", pos = 4, cex = 0.75)
+            
+        }
+    })
+    
     # PDF Report
     plotInput <- reactive({
         
         if(input$returnpdf){
-            pdf("./www/my-career-path.pdf", width=as.numeric(8), height=as.numeric(11))
+            
+            pdf("./www/Career_Path_Report.pdf", width=as.numeric(8), height=as.numeric(11))
             plot(cars, type = "n", axes = F, xlab = "", ylab = "")
             lim <- par()
-            rasterImage(img, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4])
-            # Display job title 1
-            text(7, 77, labels = input$item_name, pos = 1, cex = 0.75)  
-            text(7, 77, labels = c("https://www.governmentjobs.com/careers/lacounty/classspecs?keywords=1912"), cex = 0.1, col= "white", pos = 3)  # Make link
-            # Display job title 2
-            text(12.5, 59, labels = top1()[ input$select2_rows_selected,  "Item2Name"], pos = 2, cex = 0.75)
-            text(14.5, 59, labels = c("https://www.governmentjobs.com/careers/lacounty/classspecs?keywords=1913"), cex = 0.1, col="white", pos = 1)
+            
+            rasterImage( template(), lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4] )
+            
+            plot_labels()
+            
             dev.off()
         }
-        plot(rnorm(sample(100:200,1)), type = "n", axes = F, xlab = "", ylab = "")  # This is a 'decoy' plot that needs to render
+        
+        plot(rnorm(sample(100:200,1)), type = "n", axes = F, xlab = "", ylab = "")  
+        # This is a 'decoy' plot that needs to render
         
     })
     
@@ -675,7 +858,8 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     output$pdflink <- downloadHandler(
         filename <- "my-career.pdf",
         content <- function(file) {
-            file.copy("./www/my-career-path.pdf", file)
+            # old file that was copied was my-career-path.pdf
+            file.copy("./www/Career_Path_Report.pdf", file)
         })
     
     # Generate the download link for UI only if the checkbox is checked

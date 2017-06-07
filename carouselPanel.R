@@ -44,7 +44,8 @@ carouselPanel <- function(..., auto.advance=FALSE){
       },
       
       #Set up carousel
-      div(id=paste0("carousel-", n), class="carousel slide", `data-interval`=tolower(as.character(auto.advance)),
+      # div(id=paste0("carousel-", n), class="carousel slide", `data-interval`=tolower(as.character(auto.advance)),
+      div(id=paste0("carousel-", n), class="carousel slide carousel-fade", `data-interval`=tolower(as.character(auto.advance)),
           # Carousel Inner Div - contains the content to display
           div(class="carousel-inner",
               div(class="item active", contents[[1]], style="padding: 0 0;"), # padding = top, sides in pixels

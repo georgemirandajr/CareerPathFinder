@@ -1,0 +1,11 @@
+name: careerpathfinder-beta
+title:
+account: geom
+server: shinyapps.io
+appId: 175638
+bundleId: 855463
+url: https://geom.shinyapps.io/careerpathfinder-beta/
+when: 1496766159.09761
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: redirect.js|www/lumen.css|www/slate.css|www/Thumbs.db|www/yeti.css

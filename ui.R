@@ -33,7 +33,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                        ".navbar-right {
                            float: right !important;
                        }",
-                       "body {padding-top: 100px;}"),
+                       "body {padding-top: 75px;}"),
                    
                    tabPanel("Home", value = "home",
                             
@@ -51,6 +51,8 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 };
                               '))),
                             
+                            # tags$head(includeScript("google-analytics.js")),
+                            
                             # A header level row for the title of the app (if needed)  
                             # fluidRow(
                             #     shiny::HTML("<br><br><center> <h1></h1> </center>
@@ -59,29 +61,35 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             #     style = "height:250px;"),
                             
                             fluidRow(
-                                style = "height:250px;",
+                                style = "height:250px; padding: 125px 0px;",
                                 shiny::HTML("<center> <h1>Welcome to the Career PathFinder</h2></center>"),
                                 shiny::HTML("<center> <h5><i>Like stops on a map, a career path pinpoints your next job, 
                                             the job after that, and beyond.</i></h5> </center>")
                             ),
                             
                             fluidRow(
+                                
+                                style = "height:25px;"),
+                            
+                            fluidRow(
                                 column(2),
                                 
                                 column(3,
-                                       HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>")
-                                       ),
+                                       div(style="display: inline-block;padding: 100px 0px;",
+                                           HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>")
+                                       )
+                                ),
                                 
                                 column(5,
                                        
                                        carouselPanel(
                                            # tags$a(href = "#FAQ", 
                                            #        tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
-                                           tags$img(src = "Barbara_resp.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "Dylan_resp.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "Joseph_resp.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "Matt_resp.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "Parker_resp.svg", class = "img-responsive center-block")
+                                           tags$img(src = "original1.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "original2.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "original3.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "original4.svg", class = "img-responsive center-block"),
+                                           tags$img(src = "original5.svg", class = "img-responsive center-block")
                                            # tags$a(href = "https://geom.shinyapps.io/word", tags$img(src = "screen_capture_word_2.jpg", width = "615px"))
                                            
                                        )
@@ -98,10 +106,6 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 shiny::HTML("<center> <h4><i>Are you curious about the paths real County employees have taken?</i></h4></center>"),
                                 shiny::HTML("<center> <h4><i>Then you're in the right place.</i></h4></center>")
                             ),
-                            
-                            fluidRow(
-                                
-                                style = "height:50px;"),
                             
                             # PAGE BREAK
                             tags$hr(),
@@ -211,129 +215,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             # PAGE BREAK
                             tags$hr(),
                             
-                            # AFTERWARD
-                            fluidRow(
-                                column(3),
-                                column(6,
-                                       shiny::HTML("<br><br><center> <h1>What to do afterward</h1> </center><br>"),
-                                       shiny::HTML("<h5>Building a career path is just one part of effective career 
-                                                   planning and development. You should also establish a career plan 
-                                                   to outline <i>how</i> you will achieve your professional goals. Our
-                                                   Career Planning Guide provides information to help you establish 
-                                                   a plan for making your career path a reality.</h5>")
-                                ),
-                                column(3)
-                            ),
-                            
-                            fluidRow(
-                                
-                                style = "height:50px;"),
-                            
-                            # PAGE BREAK
-                            tags$hr(),
-                            
-                            # TEAM BIO
-                            fluidRow(
-                                column(3),
-                                column(6,
-                                       shiny::HTML("<br><br><center> <h1>Who we are</h1> </center><br>"),
-                                       shiny::HTML("<h5>The Career PathFinder is sponsored by the Los Angeles County 
-                                                   Department of Human Resources, with financial support from the 
-                                                   Quality and Productivity Commission. And here is a little information 
-                                                   about the project team!</h5>")
-                                ),
-                                column(3)
-                            ),
-                            
-                            fluidRow(
-                                
-                                style = "height:50px;"),
-                            
-                            fluidRow(
-                                column(2),
-                                
-                                # Marc
-                                column(2,
-                                       div(class="panel panel-default", 
-                                           div(class="panel-body",  width = "600px",
-                                               align = "center",
-                                               div(
-                                                   tags$img(src = "man_beard_1.svg", 
-                                                            width = "50px", height = "50px")
-                                               ),
-                                               div(
-                                                   tags$h5("Marc"),
-                                                   tags$h6( tags$i("Visionary & Project Lead"))
-                                               ),
-                                               div(
-                                                   "My County career path started as a Human Resources Analyst."
-                                               )
-                                           )
-                                       )
-                                ),
-                                # George
-                                column(2,
-                                       div(class="panel panel-default",
-                                           div(class="panel-body",  width = "600px", 
-                                               align = "center",
-                                               div(
-                                                   tags$img(src = "man.svg", 
-                                                            width = "50px", height = "50px")
-                                               ),
-                                               div(
-                                                   tags$h5("George"),
-                                                   tags$h6( tags$i("Data Scientist & Programmer"))
-                                               ),
-                                               div(
-                                                   "My County career path started as an Intermediate Typist Clerk."
-                                               )
-                                           )
-                                       )
-                                ),
-                                # Angela
-                                column(2,
-                                       div(class="panel panel-default",
-                                           div(class="panel-body",  width = "600px", 
-                                               align = "center",
-                                               div(
-                                                   tags$img(src = "woman.svg", 
-                                                            width = "50px", height = "50px")),
-                                               div(
-                                                   tags$h5("Angela"),
-                                                   tags$h6( tags$i("Writer"))
-                                               ),
-                                               div(
-                                                   "My County career path started as an Administrative Assistant."
-                                               )
-                                           )
-                                       )
-                                ),
-                                # David
-                                column(2,
-                                       div(class="panel panel-default",
-                                           div(class="panel-body",  width = "600px", 
-                                               align = "center",
-                                               div(
-                                                   tags$img(src = "man_beard_2.svg", 
-                                                            width = "50px", height = "50px")),
-                                               div(
-                                                   tags$h5("David"),
-                                                   tags$h6( tags$i("Contributer"))
-                                               ),
-                                               div(
-                                                   "My County career path started as a Human Resources Analyst."
-                                               )
-                                           )
-                                       )
-                                ),
-                                column(2)
-                                
-                            ),
-                            
-                            # PAGE BREAK
-                            tags$hr(),
-                            
-                            # Instructional Section
+                            # INSTRUCTIONAL SECTION
                             fluidRow(
                                 shiny::HTML("<br><br><center> <h1>Career Planning Made Easy.</h1> </center>
                                             <br>")
@@ -351,7 +233,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                             width = "50px", height = "50px")
                                                ),
                                                div(
-                                                   "Pick a job to start from. You may use your current job, or a job you're interested in."
+                                                   h5(
+                                                       "Pick a job to start your path. You may use your current job, or a job you're interested in exploring."
+                                                   )
                                                )
                                            )
                                        )
@@ -365,7 +249,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                             width = "50px", height = "50px")
                                                ),
                                                div(
-                                                   "Then from that job, review other jobs that people have moved into during their careers. Review information about these choices and select your next career step."
+                                                   h5(
+                                                       "Then from that job, review the set of next jobs that people have moved into during their careers. Review information about these choices and select your next career step."
+                                                   )
                                                )
                                            )
                                        )
@@ -378,7 +264,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                    tags$img(src = "three.svg", 
                                                             width = "50px", height = "50px")),
                                                div(
-                                                   "Plan up to five steps out in your career. When you're ready, you may save or print out your personalized report."
+                                                   h5(
+                                                       "Plan up to five steps out in your career. When you're ready, you may save or print out your personalized report."
+                                                   )
                                                )
                                            )
                                        )
@@ -404,27 +292,27 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             # PAGE BREAK
                             tags$hr(),
                             
-                            fluidRow(
-                                shiny::HTML("<br><br><center> <h1>Start Planning Today.</h1> </center>
-                                            <br>")
-                            ),
-                            
+                            # AFTERWARD
                             fluidRow(
                                 column(3),
-                                column(6, 
-                                       wellPanel("If you are unsure about how to start your career path, you can browse through job descriptions at", tags$a("governmentjobs.com", href = "https://www.governmentjobs.com/careers/lacounty/classspecs" )),
-                                       textInput("searchTerm", label = "Search Jobs:",
-                                                 value = "...",
-                                                 width = "100%"
-                                                 
-                                       ),
-                                       uiOutput("searchNeo")
+                                column(6,
+                                       shiny::HTML("<br><br><center> <h1>How does it fit in the big picture?</h1> </center><br>"),
+                                       shiny::HTML("<h5>Building a career path is just one part of effective career 
+                                                   planning and development. You should also establish a career plan 
+                                                   to outline <i>how</i> you will achieve your professional goals. Our
+                                                   Career Planning Guide provides information to help you establish 
+                                                   a plan for making your career path a reality.</h5>")
                                 ),
                                 column(3)
                             ),
                             
-                            fluidRow(style = "height:100px;"
-                            ),
+                            fluidRow(
+                                
+                                style = "height:50px;"),
+                            
+                            # PAGE BREAK
+                            tags$hr(),
+                            
                             fluidRow(shiny::HTML("<br><br><center> <h1>Ready to Get Started?</h1> </center>
                                             <br>")
                             ),
@@ -524,8 +412,8 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                                 div(class = "right",
                                                                     style="display: inline-block;vertical-align:top; width: 150px;",
                                                                     introBox(
-                                                                    checkboxInput('returnpdf', 'Save as PDF?', FALSE),
-                                                                    data.step = 5, data.intro = "Stay on track with your plans by downloading your path."
+                                                                        checkboxInput('returnpdf', 'Save as PDF?', FALSE),
+                                                                        data.step = 5, data.intro = "Stay on track with your plans by downloading your path."
                                                                     ),
                                                                     uiOutput("download")
                                                                 ),
@@ -590,11 +478,11 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                 column(3),
                                 column(6,
                                        tags$ul(
-                                           tags$li("The need for the Career PathFinder grew out of the fact that it is simply difficult to navigate the classification structure if you do not already know it or know someone who has gone through it."), 
-                                           tags$li("The Workforce and Employee Development team wanted to help others help themselves by providing an online tool that sheds light on the otherwise invisible career paths in the County."), 
-                                           tags$li("In 2016, the Los Angeles County Quality and Productivity Commission bestowed the seed money that got the ball rolling."),
-                                           tags$li("We want to continue to provide training through the Los Angeles County University and help people see opportunity after taking a course to improve their skills."),
-                                           tags$li("Now, and in the future, we want to be a magnet for top talent and be an employer of choice.")
+                                           tags$li(h6("The need for the Career PathFinder grew out of the fact that it is simply difficult to navigate the classification structure if you do not already know it or know someone who has gone through it.")), 
+                                           tags$li(h6("The Workforce and Employee Development team wanted to help others help themselves by providing an online tool that sheds light on the otherwise invisible career paths in the County.")), 
+                                           tags$li(h6("In 2016, the Los Angeles County Quality and Productivity Commission granted the seed money that got the ball rolling.")),
+                                           tags$li(h6("We wanted to augment training provided through the Los Angeles County University by helping people see real career opportunities after taking a course that improved their skills.")),
+                                           tags$li(h6("Now, and into the future, we want to be a magnet for top talent and be an employer of choice."))
                                        )
                                 ),
                                 column(3)
@@ -605,30 +493,102 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                        # Panel for Background on Data
                                        div(class="panel panel-default",
                                            div(class="panel-body",  
-                                               tags$div(
-                                                   align = "center", 
-                                                   "About the Data"
+                                               tags$div( align = "center",
+                                                         icon("bar-chart", class = "fa-4x"),
+                                                         div( align = "center", 
+                                                              h5("About the Data")
+                                                         )
                                                ),
-                                               tags$p("Over 30 years of data were collected, which resulted in nearly 500,000 records of career movement. Several business rules were developed to ensure the data reflected real opportunities in the current classification system."),
-                                               tags$li("Any career movement within 30 days of a previous career movement was ignored. Although this represents a small percent of movement, these job transitions may have reflected data entry errors and may have skewed probabilities in jobs with a small number of incumbents."),
-                                               tags$li("Multiple transfers within the same classification were ignored when there were 2 or more transfers to the same position. Although single transfers were counted, multiple transfers inflated the likelihood that the next step was a transfer."),
-                                               tags$li("Expired classifications were removed from an individual's career path in the source data, because their path is no longer possible in the current system."),
-                                               tags$li("Minor demotions were retained in the data to reflect deliberate career choices; however, demotions of a significant percent were excluded.")
-                                           )
-                                       ), # Closes div panel
-                                       
-                                       # Panel for Something else
-                                       div(class="panel panel-default",
-                                           div(class="panel-body", 
-                                               tags$div(
-                                                   align = "center", 
-                                                   "Quality and Productivity Commission"
-                                               ),
-                                               tags$p("Sed laoreet turpis sit amet finibus pharetra. Ut congue, orci ut congue mollis, nisi turpis pretium augue, non lacinia augue ligula a dui. Aenean in neque vitae purus bibendum facilisis. ")
+                                               tags$p(h6("Over 30 years of data were collected, which resulted in nearly 500,000 records of career movement. Several business rules were developed to ensure the data reflected real opportunities in the current classification system.")),
+                                               tags$ul(
+                                                   tags$li(h6("Any career movement within 30 days of a previous career movement was ignored. Although this represents a small percent of movement, these job transitions may have reflected data entry errors and may have skewed probabilities in jobs with a small number of incumbents.")),
+                                                   tags$li(h6("Multiple transfers within the same classification were ignored when there were 2 or more transfers to the same position. Although single transfers were counted, multiple transfers inflated the likelihood that the next step was a transfer.")),
+                                                   tags$li(h6("Expired classifications were removed from an individual's career path in the source data, because their path is no longer possible in the current system.")),
+                                                   tags$li(h6("Minor demotions were retained in the data to reflect deliberate career choices; however, demotions of a significant percent were excluded."))
+                                               )
                                            )
                                        ) # Closes div panel
                                 ), # Closes column
                                 column(2)
+                            ),
+                            # TEAM BIO
+                            fluidRow(
+                                column(3),
+                                column(6,
+                                       shiny::HTML("<br><br><center> <h5>About the team</h5> </center><br>"),
+                                       shiny::HTML("<h6>The Career PathFinder is sponsored by the Los Angeles County 
+                                                   Department of Human Resources, with financial support from the 
+                                                   Quality and Productivity Commission. And here is a little information 
+                                                   about the project team!</h6>")
+                                       ),
+                                column(3)
+                                       ),
+                            
+                            fluidRow(
+                                
+                                style = "height:50px;"),
+                            
+                            fluidRow(
+                                column(3),
+                                
+                                # Marc
+                                column(2,
+                                       div(class="panel panel-default", 
+                                           div(class="panel-body",  width = "600px",
+                                               align = "center",
+                                               div(
+                                                   tags$img(src = "man_beard_1.svg", 
+                                                            width = "50px", height = "50px")
+                                               ),
+                                               div(
+                                                   tags$h5("Marc"),
+                                                   tags$h6( tags$i("Visionary & Project Lead"))
+                                               ),
+                                               div(
+                                                   "My County career path started as a Human Resources Analyst."
+                                               )
+                                           )
+                                       )
+                                ),
+                                # George
+                                column(2,
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  width = "600px", 
+                                               align = "center",
+                                               div(
+                                                   tags$img(src = "man.svg", 
+                                                            width = "50px", height = "50px")
+                                               ),
+                                               div(
+                                                   tags$h5("George"),
+                                                   tags$h6( tags$i("Data Scientist & Programmer"))
+                                               ),
+                                               div(
+                                                   "My County career path started as an Intermediate Typist Clerk."
+                                               )
+                                           )
+                                       )
+                                ),
+                                # Angela
+                                column(2,
+                                       div(class="panel panel-default",
+                                           div(class="panel-body",  width = "600px", 
+                                               align = "center",
+                                               div(
+                                                   tags$img(src = "woman.svg", 
+                                                            width = "50px", height = "50px")),
+                                               div(
+                                                   tags$h5("Angela"),
+                                                   tags$h6( tags$i("Writer"))
+                                               ),
+                                               div(
+                                                   "My County career path started as an Administrative Assistant."
+                                               )
+                                           )
+                                       )
+                                ),
+                                column(3)
+                                
                             ),
                             fluidRow(style = "height:150px;")
                    )  # Closes About tab
