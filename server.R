@@ -27,21 +27,18 @@ load("./data/item_pairs_15.rda")
 load("./data/item_ref_30.rda")
 item_ref <- item_ref_30; rm(item_ref_30)
 
-# Load template for output report
-# img <- png::readPNG("./www/pathImg.png")  old image template
-# img5 <- png::readPNG("./www/pathImage_5.png")  # template for 5 selections
-# img4 <- png::readPNG("./www/pathImage_4.png")  # template for 4 selections
-# img3 <- png::readPNG("./www/pathImage_3.png")  # and so on...
-# img2 <- png::readPNG("./www/pathImage_2.png")  # ...
-
 source("./www/getLink.R")
 source("./www/make_breaks.R")
 
 shinyServer(function(input, output, session) {
     
+    # Navbar ------------------------------------------------------------------
+    shinyjs::addClass(id = "navBar", class = "navbar-right")
+    
     # DT Options --------------------------------------------------------------
     options(DT.options = list( lengthMenu = c(10, 20),
-                               dom = 'tl'))  # table and lengthMenu options
+                               dom = 'tl'
+    ))  # table and lengthMenu options
     
     # Intro JS ----------------------------------------------------------------
     observeEvent(input$help,
@@ -211,6 +208,7 @@ shinyServer(function(input, output, session) {
     
     output$select2 <- DT::renderDataTable({
         datatable( top1(), escape = FALSE,
+                   extensions = 'Responsive',
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", 
@@ -251,6 +249,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     
     output$select3 <- DT::renderDataTable({
         datatable( top2(), escape = FALSE, 
+                   extensions = 'Responsive',
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", 
@@ -290,6 +289,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     
     output$select4 <- DT::renderDataTable({
         datatable( top3(), escape = FALSE, 
+                   extensions = 'Responsive',
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", 
@@ -329,6 +329,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     
     output$select5 <- DT::renderDataTable({
         datatable( top4(), escape = FALSE, 
+                   extensions = 'Responsive',
                    selection = list(mode = 'single', target = 'row'),
                    colnames = c("Title", "Job Code", "Popularity %", "Starting Salary", "Max Salary Difference", "Incumbents", "Job Description"),
                    rownames = FALSE, style = "bootstrap", 
@@ -529,8 +530,8 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
         try(
             paste0( job_3_data()[1], "\n",
-                           job_3_data()[3], " - ", job_3_data()[4], " Monthly", "\n",
-                           job_3_data()[6], " Popularity", " | ", job_3_data()[5], " Incumbents"),
+                    job_3_data()[3], " - ", job_3_data()[4], " Monthly", "\n",
+                    job_3_data()[6], " Popularity", " | ", job_3_data()[5], " Incumbents"),
             TRUE
         )
         
@@ -577,8 +578,8 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     label_4 <- reactive({
         try(
             paste0( job_4_data()[1], "\n",
-                           job_4_data()[3], " - ", job_4_data()[4], " Monthly", "\n",
-                           job_4_data()[6], " Popularity", " | ", job_4_data()[5], " Incumbents"),
+                    job_4_data()[3], " - ", job_4_data()[4], " Monthly", "\n",
+                    job_4_data()[6], " Popularity", " | ", job_4_data()[5], " Incumbents"),
             TRUE
         )
         
@@ -626,8 +627,8 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
         
         try(
             paste0( job_5_data()[1], "\n",
-                           job_5_data()[3], " - ", job_5_data()[4], " Monthly", "\n",
-                           job_5_data()[6], " Popularity", " | ", job_5_data()[5], " Incumbents"),
+                    job_5_data()[3], " - ", job_5_data()[4], " Monthly", "\n",
+                    job_5_data()[6], " Popularity", " | ", job_5_data()[5], " Incumbents"),
             TRUE
         )
     })
@@ -640,7 +641,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                "circle" = "f2be",
                "map-marker" = "f041",
                "rocket" = "f135",
-               "street-view" = "f21d",
+               "paper-plane" = "f1d9",
                "leaf" = "f06c")
     })
     
@@ -650,7 +651,7 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                "circle" = "#0c84e4",      # Blue
                "map-marker" = "#000000",  # Black
                "rocket" = "#f44141",      # Red
-               "street-view" = "#663096", # Purple
+               "paper-plane" = "#663096", # Purple  deeper purple --> #663096
                "leaf" = "#10d13a"         # Green
         )
     })
@@ -853,7 +854,16 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     })
     
     # This plots the blank 'decoy' plot
-    output$myplot <- renderPlot({ plotInput() })  
+    # Progress bar is based on the computation time of this plot
+    output$myplot <- renderPlot({ 
+        withProgress(message = 'Building your report', {
+            
+            plotInput()
+
+            incProgress(detail = "Putting on the finishing touches...", amount = 0.5)
+            
+        })
+    })
     
     output$pdflink <- downloadHandler(
         filename <- "my-career.pdf",
@@ -873,13 +883,17 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
     
     # Delay showing the download link to buy time to generate the PDF
     observeEvent(input$returnpdf,{
+        
         delay(3000, shinyjs::show("download") )
+        
     })
     
     # Survey link after the download button is clicked
+    # AND reset the checkbox to the download button
     
     onclick("download",
             delay(5000, 
+                  c(
                   showModal(
                       modalDialog(
                           title = "Tell us what you think!",
@@ -890,10 +904,14 @@ var tips = ['Classification Title', 'Title Code', 'Percent of employees that mov
                           size = "m", 
                           footer = modalButton(label = "Maybe later", icon = icon("close") )
                       )
-                  ))
+                  ),
+                  delay(1000, shinyjs::reset("returnpdf") )
+                  )
+            )
     )
+
     
-    # Navbar ------------------------------------------------------------------
-    shinyjs::addClass(id = "navBar", class = "navbar-right")
+    
+
     
 })

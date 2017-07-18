@@ -22,7 +22,7 @@ panel_div <- function(class_type, content) {
     )
 }
 
-shinyUI(navbarPage(title = "", id = "navBar",
+shinyUI(navbarPage(title = img(src="HR.LOGOred3_cropped.png"), id = "navBar",
                    theme = "paper.css",
                    collapsible = TRUE,
                    inverse = TRUE,
@@ -35,7 +35,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                        }",
                        "body {padding-top: 75px;}"),
                    
-                   tabPanel("Home", value = "home",
+                   tabPanel("HOME", value = "home",
                             
                             shinyjs::useShinyjs(),
                             
@@ -50,6 +50,22 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                   }
                                 };
                               '))),
+                            fluidRow(
+                                HTML("
+                            <div class='container'> 
+                            <section class='banner'>
+                            <h2 class='parallax'>CAREER PATHFINDER</h2>
+                            <p class='parallax_description'>A career path pinpoints your next job, the job
+                                after that, and beyond.</p>
+                        </section>
+                          <section class='about' id='about'>
+    <h2 class='hidden'>About</h2>
+                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+                          </section>
+                          </div>")
+                            ),
                             
                             # tags$head(includeScript("google-analytics.js")),
                             
@@ -60,55 +76,55 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             #                 <br>"),
                             #     style = "height:250px;"),
                             
-                            fluidRow(
-                                style = "height:250px; padding: 125px 0px;",
-                                shiny::HTML("<center> <h1>Welcome to the Career PathFinder</h2></center>"),
-                                shiny::HTML("<center> <h5><i>Like stops on a map, a career path pinpoints your next job, 
-                                            the job after that, and beyond.</i></h5> </center>")
-                            ),
+                            # fluidRow(
+                            #     style = "height:250px; padding: 125px 0px;",
+                            #     shiny::HTML("<center> <h1>Welcome to the Career PathFinder</h2></center>"),
+                            #     shiny::HTML("<center> <h5><i>Like stops on a map, a career path pinpoints your next job, 
+                            #                 the job after that, and beyond.</i></h5> </center>")
+                            # ),
                             
-                            fluidRow(
-                                
-                                style = "height:25px;"),
+                            # fluidRow(
+                            #     
+                            #     style = "height:25px;"),
                             
-                            fluidRow(
-                                column(2),
-                                
-                                column(3,
-                                       div(style="display: inline-block;padding: 100px 0px;",
-                                           HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>")
-                                       )
-                                ),
-                                
-                                column(5,
-                                       
-                                       carouselPanel(
-                                           # tags$a(href = "#FAQ", 
-                                           #        tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
-                                           tags$img(src = "original1.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "original2.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "original3.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "original4.svg", class = "img-responsive center-block"),
-                                           tags$img(src = "original5.svg", class = "img-responsive center-block")
-                                           # tags$a(href = "https://geom.shinyapps.io/word", tags$img(src = "screen_capture_word_2.jpg", width = "615px"))
-                                           
-                                       )
-                                )
-                            ),
-                            
-                            fluidRow(
-                                
-                                style = "height:50px;"),
-                            
-                            fluidRow(
-                                style = "height:250px;",
-                                shiny::HTML("<center> <h4><i>Are you looking to plan a career with the County?</i></h4> </center>"),
-                                shiny::HTML("<center> <h4><i>Are you curious about the paths real County employees have taken?</i></h4></center>"),
-                                shiny::HTML("<center> <h4><i>Then you're in the right place.</i></h4></center>")
-                            ),
-                            
-                            # PAGE BREAK
-                            tags$hr(),
+                            # fluidRow(
+                            #     column(2),
+                            #     
+                            #     column(3,
+                            #            div(style="display: inline-block;padding: 100px 0px;",
+                            #                HTML("<h3>What <span style='font-weight:bold'>career planning</span> questions are you looking to answer?</h3>")
+                            #            )
+                            #     ),
+                            #     
+                            #     column(5,
+                            #            
+                            #            carouselPanel(
+                            #                # tags$a(href = "#FAQ", 
+                            #                #        tags$img(src = "screen_capture_absenteeism_2.jpg", width = "615px")), # experiment diff size img - fixed height 1080px and width 1900px
+                            #                tags$img(src = "original1.svg", class = "img-responsive center-block"),
+                            #                tags$img(src = "original2.svg", class = "img-responsive center-block"),
+                            #                tags$img(src = "original3.svg", class = "img-responsive center-block"),
+                            #                tags$img(src = "original4.svg", class = "img-responsive center-block"),
+                            #                tags$img(src = "original5.svg", class = "img-responsive center-block")
+                            #                # tags$a(href = "https://geom.shinyapps.io/word", tags$img(src = "screen_capture_word_2.jpg", width = "615px"))
+                            #                
+                            #            )
+                            #     )
+                            # ),
+                            # 
+                            # fluidRow(
+                            #     
+                            #     style = "height:50px;"),
+                            # 
+                            # fluidRow(
+                            #     style = "height:250px;",
+                            #     shiny::HTML("<center> <h4><i>Are you looking to plan a career with the County?</i></h4> </center>"),
+                            #     shiny::HTML("<center> <h4><i>Are you curious about the paths real County employees have taken?</i></h4></center>"),
+                            #     shiny::HTML("<center> <h4><i>Then you're in the right place.</i></h4></center>")
+                            # ),
+                            # 
+                            # # PAGE BREAK
+                            # tags$hr(),
                             
                             # WHAT
                             fluidRow(
@@ -332,9 +348,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                             
                    ), # Closes the first tabPanel called "Home"
                    
-                   tabPanel("Career PathFinder", value = "careerPF",
+                   tabPanel("CAREER PATHFINDER", value = "careerPF",
                             
-                            sidebarLayout(
+                            sidebarLayout( 
                                 
                                 sidebarPanel( width = 3,
                                               introjsUI(),
@@ -358,7 +374,7 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                                  choices = c("Circle" = "circle", 
                                                                              "Map Marker" = "map-marker", 
                                                                              "Rocket" = "rocket", 
-                                                                             "Street View" = "street-view", 
+                                                                             "Paper Plane" = "paper-plane", 
                                                                              "Leaf" = "leaf")
                                                   ),
                                                   textInput("userName", "Add your name:", value = ""),
@@ -368,21 +384,20 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                           style = "height:50px;",
                                                           actionLink("settings", "Settings", 
                                                                      icon = icon("sliders", class = "fa-2x"))),
-                                                      
-                                                      tags$div(
-                                                          style = "height:50px;",
-                                                          
-                                                          uiOutput("printInput1"),
-                                                          uiOutput("printInput2"),
-                                                          uiOutput("printInput3"),
-                                                          uiOutput("printInput4"),
-                                                          uiOutput("printInput5")
-                                                      ),
                                                       data.step = 6,
                                                       data.intro = "Settings is where you can set options that affect the graph and career statistics."
+                                                  ),
+                                                  tags$div(
+                                                      style = "height:50px;",
+                                                      
+                                                      uiOutput("printInput1"),
+                                                      uiOutput("printInput2"),
+                                                      uiOutput("printInput3"),
+                                                      uiOutput("printInput4"),
+                                                      uiOutput("printInput5")
                                                   )
                                               )
-                                ),
+                                ),  # Closes sidebarPanel
                                 mainPanel( width = 8,
                                            fluidRow(
                                                
@@ -411,9 +426,12 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                                 ),
                                                                 div(class = "right",
                                                                     style="display: inline-block;vertical-align:top; width: 150px;",
+                                                                    
                                                                     introBox(
+                                                                        
                                                                         checkboxInput('returnpdf', 'Save as PDF?', FALSE),
                                                                         data.step = 5, data.intro = "Stay on track with your plans by downloading your path."
+                                                                        
                                                                     ),
                                                                     uiOutput("download")
                                                                 ),
@@ -454,11 +472,11 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                ),
                                                plotOutput("myplot")
                                            )
-                                )
-                            )
+                                )  # Closes the mainPanel
+                            )  # Closes the sidebarLayout
                    ),  # Closes the second tabPanel called "Career PathFinder"
                    
-                   tabPanel("About", value = "about",
+                   tabPanel("ABOUT", value = "about",
                             
                             fluidRow(
                                 shiny::HTML("<br><br><center> 
@@ -520,9 +538,9 @@ shinyUI(navbarPage(title = "", id = "navBar",
                                                    Department of Human Resources, with financial support from the 
                                                    Quality and Productivity Commission. And here is a little information 
                                                    about the project team!</h6>")
-                                       ),
+                                ),
                                 column(3)
-                                       ),
+                            ),
                             
                             fluidRow(
                                 
