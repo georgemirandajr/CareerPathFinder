@@ -1588,10 +1588,10 @@ pre code {
     overflow-y: scroll;
 }
 .container {
-	width: 100%;
+	width: inherit;
 	margin-left: -15px;
-	margin-right: -15px;
-	height: 700px;
+	margin-right: 0px;
+	height: 600px;  /*/ height of box holding parallax/*/
 	background-color: #FFFFFF;
 }
 
@@ -1625,7 +1625,7 @@ text-align:center;
 }
 @media (min-width: 1200px) {
     .container {
-        width: 1370px; /*/1170px;/*/
+        width: 1349px; /*/1170px; OR 1370px;/*/
     }
 }
 .container-fluid {
@@ -1633,7 +1633,7 @@ text-align:center;
     margin-left: auto;
     padding-left: 15px;
     padding-right: 15px;
-    padding-top: 45px;
+    padding-top: 15px;
      /*/ i added padding to make room for logo but still needs work/*/
 }
 .row {
@@ -3143,7 +3143,7 @@ fieldset[disabled] .btn-default.focus {
 }
 .btn-primary {
     color: #ffffff;
-        background-color: #2196f3;
+        background-color: #f75148; /*/ #2196f3; /*/
         border-color: transparent;
 }
 .btn-primary:focus,
@@ -3464,7 +3464,7 @@ fieldset[disabled] .btn-link:focus {
     padding: 10px 16px;  /* 10px 16px;  <-- original size  20px 46px <----BIGGER SIZE */
     font-size: 19px; /*/ 17 px - BIGGER WAS 22px /*/
     line-height: 1.3333333;
-    border-radius: 3px;
+    border-radius: 25px;  /*/3px;/*/
     white-space: normal;
 }
 .btn-sm,
@@ -3472,14 +3472,14 @@ fieldset[disabled] .btn-link:focus {
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px;
+    border-radius: 25px;
 }
 .btn-xs,
 .btn-group-xs > .btn {
     padding: 1px 5px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px;
+    border-radius: 25px;
 }
 .btn-block {
     display: block;
@@ -5841,6 +5841,16 @@ button.list-group-item-danger.active:focus {
     width: 100%;
     border: 0;
 }
+@media (min-width: 600px) {
+    .embed{
+    position: relative;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100px;
+    border: 0;
+}
+}
 .embed-responsive-16by9 {
     padding-bottom: 56.25%;
 }
@@ -6870,7 +6880,7 @@ button.close {
 }
 .btn-default {
     position: relative;
-    background-color: #0c84e4;  /*/ button and button text color/*/
+    background-color: #f75148; /*/ #0c84e4;  button and button text color/*/
     color: white;
 }
 .btn-default:focus {
@@ -6878,7 +6888,8 @@ button.close {
 }
 .btn-default:hover,
 .btn-default:active:hover {
-    background-color: #f0f0f0;
+    background-color: #333333; /*/ #f0f0f0; /*/
+    color: white;
 }
 .btn-default:active {
     -webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
@@ -6917,11 +6928,11 @@ button.close {
     position: relative;
 }
 .btn-primary:focus {
-    background-color: #2196f3; 
+    background-color: #f75148; /*/ #2196f3; /*/
 }
 .btn-primary:hover,
 .btn-primary:active:hover {
-    background-color: #0d87e9;  
+    background-color: #333333; /*/#0d87e9;/*/ 
 }
 .btn-primary:active {
     -webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
@@ -7908,7 +7919,7 @@ input[type="checkbox"]:disabled:checked:after,
 }
 
 .footer-basic-centered{
-	background-color: #0c7cd5;
+	background-color: #333333;
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
 	box-sizing: border-box;
 	width: 100%;
@@ -8013,4 +8024,78 @@ input[type="checkbox"]:disabled:checked:after,
 	margin-bottom: 0px;
 	margin-left: 0px;
     font-size: 30px;
+}
+
+@media (max-width: 600px) {
+    .banner {
+	background-color: #000000;
+	/*/background-image: url('https://static.pexels.com/photos/297755/pexels-photo-297755.jpeg');/*/
+	background-image: url('https://static.pexels.com/photos/467659/pexels-photo-467659.jpeg');
+	height: 500px;
+	width: inherit;
+	background-attachment: fixed;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+.parallax {
+	color: #000000;
+	text-align: center;
+	/*/padding-right: 100px;/*/
+	padding-top: 110px;
+	letter-spacing: 2px;
+	margin-top: 0px;
+    font-size: 60px;
+}
+.parallax_description {
+	color: #000000;
+	text-align: right;
+	padding-right: 30px;
+	padding-top: 50px;
+	width: 100%;
+	float: right;
+	font-weight: lighter;
+	line-height: 100%;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+    font-size: 25px;
+}
+}
+
+@media (max-width: 767px) {
+    .banner {
+	background-color: #000000;
+	/*/background-image: url('https://static.pexels.com/photos/297755/pexels-photo-297755.jpeg');/*/
+	background-image: url('https://static.pexels.com/photos/467659/pexels-photo-467659.jpeg');
+	height: 500px;
+	width: inherit;
+	background-attachment: fixed;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+.parallax {
+	color: #000000;
+	text-align: center;
+	/*/padding-right: 100px;/*/
+	padding-top: 110px;
+	letter-spacing: 2px;
+	margin-top: 0px;
+    font-size: 60px;
+}
+.parallax_description {
+	color: #000000;
+	text-align: right;
+	padding-right: 30px;
+	padding-top: 50px;
+	width: 100%;
+	float: right;
+	font-weight: lighter;
+	line-height: 100%;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+    font-size: 25px;
+}
 }

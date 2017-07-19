@@ -22,7 +22,7 @@ panel_div <- function(class_type, content) {
     )
 }
 
-shinyUI(navbarPage(title = img(src="HR.LOGOred3_cropped.png"), id = "navBar",
+shinyUI(navbarPage(title = img(src="HR.LOGOred3_cropped.png", height = "40px"), id = "navBar",
                    theme = "paper.css",
                    collapsible = TRUE,
                    inverse = TRUE,
@@ -58,12 +58,6 @@ shinyUI(navbarPage(title = img(src="HR.LOGOred3_cropped.png"), id = "navBar",
                             <p class='parallax_description'>A career path pinpoints your next job, the job
                                 after that, and beyond.</p>
                         </section>
-                          <section class='about' id='about'>
-    <h2 class='hidden'>About</h2>
-                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
-                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
-                          <p class='text_column'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
-                          </section>
                           </div>")
                             ),
                             
@@ -296,7 +290,7 @@ shinyUI(navbarPage(title = img(src="HR.LOGOred3_cropped.png"), id = "navBar",
                                 column(3),
                                 column(6,
                                        tags$embed(src = "https://player.vimeo.com/video/8419440",
-                                                  width = "640", height = "360")
+                                                  width = "640", height = "360") 
                                 ),
                                 column(3)
                             ),
